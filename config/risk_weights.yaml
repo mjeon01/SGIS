@@ -1,0 +1,13 @@
+hazard:
+  indicators:
+    heatwave_intensity: 0.6
+    heatwave_history_index: 0.4
+exposure:
+  indicators:
+    total_population: 0.4
+    population_density: 0.6
+vulnerability:
+  indicators:
+    elderly_ratio: 0.4
+    single_household_ratio: 0.25
+    old_house_ratio: 0.35

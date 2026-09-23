@@ -1,0 +1,198 @@
+{
+  "verified_at": "2026-09-23T00:17:43.075065+00:00",
+  "runtime": {
+    "web": "http://127.0.0.1:3018",
+    "api": "http://127.0.0.1:8018",
+    "frontend": "production",
+    "default_data_mode": "sgis"
+  },
+  "sgis_authentication": "verified_successfully",
+  "reference_year": 2024,
+  "boundary_year": 2025,
+  "real_regions": 239,
+  "real_observations": 223,
+  "busan_districts": 16,
+  "busan_dongs": 206,
+  "unmatched_region_codes": [],
+  "actual_core_indicators": [
+    "heatwave_intensity",
+    "heatwave_history_index",
+    "total_population",
+    "population_density",
+    "elderly_ratio",
+    "single_household_ratio",
+    "old_house_ratio"
+  ],
+  "unavailable_core_indicators": [],
+  "actual_risk_score_status": "computed_for_complete_regions_only",
+  "snapshot_sha256": "12966bd4e1dd654c723ff3b080ee5a8658056fab2af5b3302d3b2729d06b6517",
+  "tests": {
+    "pytest_passed": 68,
+    "pytest_failed": 0,
+    "dependency_deprecation_warnings": 2,
+    "typescript": "passed",
+    "next_production_build": "passed",
+    "browser_e2e": "passed_on_production",
+    "browser_scenarios": [
+      "busan_all_dongs_default",
+      "consistent_citywide_ranking_detail_explanation",
+      "left_analysis_panel_geometry",
+      "district_summary_drilldown",
+      "missing_observation_display",
+      "nationwide_boundary_exploration",
+      "actual_sample_separation",
+      "layer_switches",
+      "street_tile_toggle_with_stub",
+      "explicit_sample_fallback_after_simulated_503",
+      "current_facilities_separate_from_historical_analysis",
+      "facility_region_and_type_filters",
+      "facility_marker_and_left_detail_synchronization",
+      "facility_source_years_and_operating_information",
+      "automatic_district_dong_boundaries_and_labels",
+      "unchanged_citywide_ranking_across_zoom",
+      "district_summary_zoom_to_dong",
+      "daily_maximum_minimum_chart_and_incomplete_periods",
+      "automatic_regional_report_download",
+      "report_facility_roundtrip",
+      "current_weather_recent_and_summer",
+      "current_weather_missing_station",
+      "current_weather_refresh_cache",
+      "shelter_eligibility_day_time_filter",
+      "neighborhood_current_weather_summary_and_detail",
+      "neighborhood_current_weather_station_changes_by_region",
+      "current_weather_excluded_from_sample_neighborhoods"
+    ],
+    "uncaught_browser_page_errors": 0,
+    "credential_scan_files": 95,
+    "credential_scan_matches": 0,
+    "street_tiles": "stubbed during automation to comply with tile usage policy; no bulk download",
+    "risk_snapshot_unchanged_after_temperature_supplement": true,
+    "risk_snapshot_unchanged_after_current_features": true,
+    "removed_accessibility_api": "404 and absent from OpenAPI"
+  },
+  "screenshots": [
+    "01-national-real.png",
+    "02-busan-real-exposure.png",
+    "03-haeundae-real.png",
+    "04-dong-real-factors.png",
+    "05-busan-sample-risk.png",
+    "06-dong-sample-risk.png",
+    "07-sample-factors-comparison.png",
+    "08-sample-rule-actions.png",
+    "09-sample-hazard-layer.png",
+    "10-sample-vulnerability-layer.png",
+    "11-data-sources-methodology.png",
+    "12-sinho-real-alignment.png",
+    "13-sample-average-comparison-chart.png",
+    "14-nationwide-boundary-exploration.png",
+    "15-busan-actual-risk.png",
+    "16-real-rule-actions.png",
+    "17-real-data-sources.png",
+    "18-real-incomplete-observations.png",
+    "19-busan-dong-priority-left.png",
+    "20-left-dong-analysis.png",
+    "21-left-dong-factors.png",
+    "22-left-dong-actions.png",
+    "23-left-missing-data.png",
+    "24-current-facilities-separate.png",
+    "25-current-shelter-detail.png",
+    "26-current-shade-detail.png",
+    "27-zoomed-out-district-boundaries.png",
+    "28-zoomed-in-dong-boundaries.png",
+    "29-daily-maximum-minimum-temperature.png",
+    "31-review-to-current-facilities.png",
+    "34-current-weather-recent.png",
+    "35-current-weather-summer.png",
+    "36-automatic-regional-report.png",
+    "37-neighborhood-current-weather-summary.png",
+    "38-neighborhood-current-weather-detail.png",
+    "39-current-facilities-without-walking-overlay.png"
+  ],
+  "limitations": [
+    "Nearest-station observations are not direct measurements in each administrative region",
+    "35 regions have incomplete nearest-station observations and no composite score",
+    "Housing counts are unavailable; published ratios and official parent ratios are used",
+    "Model weights and prediction performance are not empirically validated",
+    "Real statistical analysis is limited to Busan",
+    "Facility snapshots are 2026 registration data, not live opening status",
+    "Facility regional filters follow registered coordinates and 2025 boundaries; some source addresses disagree with spatial membership",
+    "Risk uses 2024 statistics; current weather is separate 2026 daily observations, not instantaneous live readings",
+    "Incomplete facility schedules are unknown, not closed; holidays and warning-specific hours are not applied"
+  ],
+  "partially_missing_core_indicators": [
+    "heatwave_intensity",
+    "heatwave_history_index"
+  ],
+  "complete_regions_including_busan": 188,
+  "scored_busan_districts": 14,
+  "scored_busan_dongs": 173,
+  "unscored_busan_districts": 2,
+  "unscored_busan_dongs": 33,
+  "kma_stations_with_full_summer_observations": 10,
+  "request_interval_seconds": 3,
+  "facility_integration_status": "complete: separate 2026 current facilities screen, no comparison with 2024 risk or population",
+  "current_facilities": {
+    "reference_year": 2026,
+    "boundary_year": 2025,
+    "collected_at": "2026-09-22T13:05:56.117727+00:00",
+    "source_counts": {
+      "shelter": 1735,
+      "shade": 1835
+    },
+    "mapped_counts": {
+      "shelter": 1735,
+      "shade": 1834
+    },
+    "excluded_coordinate_count": 1,
+    "unassigned_region_count": 3,
+    "notes": [
+      "현재 시설은 2024년 취약도·인구와 수치 비교하지 않습니다.",
+      "시설별 기준일이 다릅니다. 실시간 개방 여부는 제공하지 않습니다.",
+      "출처에 등록된 시설만 표시하며 부산의 모든 피서 공간을 뜻하지 않습니다.",
+      "동 연결은 2025년 경계 내 좌표 포함 여부로 판정합니다. 경계 밖·중복 경계 좌표는 임의 배정하지 않습니다."
+    ]
+  },
+  "daily_temperature_display": {
+    "reference_year": 2024,
+    "period": [
+      "2024-06-01",
+      "2024-08-31"
+    ],
+    "source": "기상청 ASOS/AWS 일 관측자료",
+    "source_url": "https://data.kma.go.kr/data/grnd/selectAwsRltmList.do",
+    "collected_at": "2026-09-22T10:46:13.531428+00:00",
+    "station_count": 14,
+    "complete_minimum_station_count": 10,
+    "used_in_risk_score": false
+  },
+  "current_weather": {
+    "reference_year": 2026,
+    "requested_through": "2026-09-22",
+    "latest_observation_date": "2026-09-22",
+    "collected_at": "2026-09-23T00:04:25.276184+00:00",
+    "source": "기상청 ASOS/AWS 일 관측자료",
+    "request_interval_seconds": 3,
+    "recent_period": [
+      "2026-08-24",
+      "2026-09-22"
+    ],
+    "summer_period": [
+      "2026-06-01",
+      "2026-08-31"
+    ],
+    "is_realtime": false,
+    "station_count": 16,
+    "located_stations": 14,
+    "complete_recent_stations": 13,
+    "complete_summer_stations": 13,
+    "used_in_risk_score": false,
+    "regional_display": {
+      "entry": "동네 분석 → 현재기상; 위험현황 요약",
+      "linkage": "nearest station with verified coordinates at observation cutoff",
+      "used_in_risk_score": false
+    }
+  },
+  "removed_features": [
+    "walking_accessibility_overlay_distance_controls_and_api"
+  ]
+}
