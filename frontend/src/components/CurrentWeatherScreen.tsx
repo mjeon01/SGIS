@@ -3,11 +3,13 @@ import {useRef} from 'react';
 import {LineChart,Line,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,ReferenceLine} from 'recharts';
 import {ArrowLeft,ArrowRight,ChevronRight,MapPin,RefreshCw} from 'lucide-react';
 import {fmt} from './constants';
-import {thermalColor} from './map/WeatherLayer';
+import {thermalColor} from './map/observation-colors';
+import NearbyFacilities from './NearbyFacilities';
+import type {NearbyFacilitiesController} from '@/hooks/useNearbyFacilities';
 import type {WeatherController} from '@/hooks/useWeather';
 
-type Props={place:string;onFacilities:()=>void;controller:WeatherController;onStationChange:(id:string)=>void;onAnalyze:(code:string,name:string)=>void;returnRegion:{code:string;name:string}|null;onReturn:()=>void};
-export default function CurrentWeatherScreen({controller,onStationChange,onAnalyze,returnRegion,onReturn,place,onFacilities}:Props){
+type Props={nearby:NearbyFacilitiesController;onPick:()=>void;place:string;onFacilities:()=>void;controller:WeatherController;onStationChange:(id:string)=>void;onAnalyze:(code:string,name:string)=>void;returnRegion:{code:string;name:string}|null;onReturn:()=>void};
+export default function CurrentWeatherScreen({nearby,onPick,controller,onStationChange,onAnalyze,returnRegion,onReturn,place,onFacilities}:Props){
  const {data,error,period,setPeriod,job,refresh,station,series,focus}=controller;
  const linksRef=useRef<HTMLElement>(null);
  const selectStation=(id:string)=>{onStationChange(id);requestAnimationFrame(()=>linksRef.current?.scrollIntoView({block:'nearest',behavior:'smooth'}));};
@@ -15,8 +17,9 @@ export default function CurrentWeatherScreen({controller,onStationChange,onAnaly
    <div className="facility-heading weather-heading"><span className="eyebrow">폭염 대비 · 기온 기록</span><h1>우리 동네 기온 비교</h1><p>{place}에서 출발해 인근 관측기온을 비교합니다.</p></div>
    <div className="weather-content">
     {returnRegion&&<button className="weather-return-analysis" onClick={onReturn}><ArrowLeft size={14}/>{returnRegion.name} 분석으로 돌아가기</button>}
-    <button className="weather-refresh" disabled={job.state==='running'||job.state==='disabled'} onClick={refresh}><RefreshCw size={14} className={job.state==='running'?'spin':''}/>{job.state==='disabled'?'저장된 관측자료 제공':job.state==='running'?'기상청 조회 중':'기상청 자료 갱신'}</button>
-    {job.message&&<p role="status" className="temperature-note">{job.message}</p>}
+    <NearbyFacilities controller={nearby} onPick={onPick}/>
+    <details className="weather-refresh-details"><summary>기상 자료 저장·갱신 안내</summary><button className="weather-refresh" disabled={job.state==='running'||job.state==='disabled'} onClick={refresh}><RefreshCw size={14} className={job.state==='running'?'spin':''}/>{job.state==='disabled'?'저장된 관측자료 제공':job.state==='running'?'기상청 조회 중':'기상청 자료 갱신'}</button>
+    {job.message&&<p role="status" className="temperature-note">{job.message}</p>}</details>
     {error&&<div role="alert" className="inline-error">{error}<button onClick={()=>controller.retry()}>다시 불러오기</button></div>}
     {!data&&!error?<p>관측자료를 불러오고 있습니다…</p>:data&&station&&<>
      <section className="weather-comparison-list" aria-label="같은 날 최고기온 비교"><div className="section-title"><h2>같은 날 최고기온</h2><time>{data.observed_on}</time></div><p>관측값이 있는 {data.observed_count}곳 · 높은 기온부터 표시</p><div>{data.stations.map(s=><button key={s.station_id} aria-pressed={station.station_id===s.station_id} onClick={()=>selectStation(s.station_id)}><i style={{background:thermalColor(s.maximum)}}/><span>{s.station_name}</span><strong>{s.maximum==null?'관측 없음':`${fmt(s.maximum)}℃`}</strong><ChevronRight size={12}/></button>)}</div></section>

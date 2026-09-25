@@ -1,0 +1,162 @@
+/* Observation playback and registered facilities share the existing road map. */
+.climate-shell .observation-card { width:290px; padding:16px 18px 12px; border:1px solid #dbe4ef; border-radius:16px; background:#fffffff7; box-shadow:0 8px 30px #18314b18; color:var(--ui-text); }
+.observation-card .observation-heading { font-size:11px; color:var(--ui-muted); }
+.observation-heading>span { display:flex; align-items:center; gap:5px; color:#a95021; white-space:nowrap; }
+.is-cold .observation-heading>span { color:#2563a4; }
+.climate-shell .observation-card h2 { margin:14px 0 8px; font-size:18px; font-weight:700; }
+.observation-card h2>span { font-size:12px; font-weight:400; margin-left:6px; color:var(--ui-muted); }
+.observation-card .observation-reading { display:flex; align-items:center; justify-content:space-between; gap:12px; color:#b55b24; }
+.observation-card.is-cold .observation-reading { color:#2676a8; }
+.observation-reading>div>span { display:block; font-size:12px; color:var(--ui-muted); }
+.observation-reading strong { display:block; font-size:46px; letter-spacing:-2px; line-height:1.25; font-variant-numeric:tabular-nums; }
+.observation-reading strong small { font-size:22px; margin-left:5px; font-weight:400; letter-spacing:0; }
+.observation-reading>svg { opacity:.65; }
+.observation-facts { display:grid; grid-template-columns:1fr 1fr; padding-top:12px; margin:12px 0 0; border-top:1px solid var(--ui-border); gap:14px; }
+.observation-facts dt { font-size:11px; color:var(--ui-muted); }
+.observation-facts dd { display:flex; align-items:center; gap:3px; margin:4px 0 0; font-size:19px; font-weight:650; font-variant-numeric:tabular-nums; }
+.observation-facts dd small { font-size:12px; font-weight:400; }
+.observation-facts .observation-missing { font-size:12px; font-weight:400; color:var(--ui-muted); }
+.climate-shell .observation-card .observation-basis { font-size:10px; color:var(--ui-muted); margin-top:9px; line-height:1.6; }
+.observation-card .observation-actions { display:flex; gap:8px; justify-content:flex-start; margin-top:10px; border-top:1px solid var(--ui-border); padding-top:5px; }
+.observation-card .observation-actions button { min-height:38px; margin:0; gap:6px; font-size:11px; color:var(--ui-blue-ink); }
+.observation-actions button:hover { text-decoration:underline; }
+.climate-shell:has(.observation-card) .map-title-card { display:none; }
+.climate-shell[data-hazard=cold]:has(.observation-card) .map-context-hint { display:none; }
+
+/* These are point observations. No interpolated temperature surface is drawn. */
+.climate-shell .observation-marker { min-width:66px; min-height:48px; padding:6px 10px; display:flex; flex-direction:column; gap:1px; border:1px solid #fff; border-radius:10px; background:#fff; box-shadow:0 3px 10px #17365436; color:var(--weather-color); cursor:pointer; }
+.observation-marker>span { font-size:10px; color:#526175; line-height:1.3; }
+.observation-marker>strong { font-size:15px; line-height:1.3; font-variant-numeric:tabular-nums; }
+.climate-shell .observation-marker.active { border:2px solid var(--ui-blue); background:#fff; box-shadow:0 0 0 4px #2563eb24,0 5px 15px #17365430; z-index:5; }
+.observation-marker:focus-visible { outline:3px solid #2563eb; outline-offset:4px; }
+.climate-shell .observation-marker:hover { box-shadow:0 0 0 3px #ffffffbf,0 6px 18px #17365442; }
+
+.timeline-data-strip { position:absolute; left:0; right:0; top:29px; height:14px; overflow:hidden; border-radius:3px; box-shadow:0 0 0 1px #ffffff30; }
+.timeline-data-strip>i { display:block; position:absolute; height:100%; border-right:1px solid #ffffff25; }
+.timeline-data-strip>.is-missing { background:repeating-linear-gradient(135deg,#76879a 0 2px,#3e5068 2px 5px); }
+.has-observations .timeline-scale { height:91px; }
+.has-observations .timeline-tick,.has-observations .timeline-minor-tick { top:44px; }
+.has-observations .timeline-highlight-mark { top:31px; z-index:2; }
+.timeline-playhead>span b,.timeline-hover b { display:inline-block; margin-left:8px; padding-left:8px; border-left:1px solid currentColor; font-size:12px; }
+.climate-shell .timeline-focus-toggle { width:36px; min-width:36px; height:34px; border:1px solid #506685; border-radius:7px; color:#dae5f4; }
+.climate-shell .timeline-focus-toggle[aria-pressed=true] { background:#bfdbfe; color:#172e50; border-color:#bfdbfe; }
+.climate-shell .timeline-dock { border-radius:16px; box-shadow:0 8px 32px #0f172a30; }
+.map-timeline .timeline-play span { white-space:nowrap; }
+.climate-shell:has(.has-observations) .weather-map-notice { bottom:290px; }
+
+.nearby-facilities { border:1px solid #d7e4f4; border-radius:14px; margin:2px 0 18px; overflow:hidden; background:#fff; }
+.nearby-heading { padding:17px 15px 12px; background:linear-gradient(125deg,#f1f7ff,#fff); }
+.nearby-heading .eyebrow { font-size:10px; letter-spacing:.2px; color:var(--ui-blue-ink)!important; }
+.nearby-heading h2 { margin:6px 0; font-size:17px; font-weight:700; letter-spacing:-.7px; }
+.nearby-heading p { font-size:12px; color:var(--ui-muted); line-height:1.6; }
+.nearby-toggles { display:grid; grid-template-columns:1fr 1fr; gap:7px; padding:0 12px; }
+.nearby-toggles button { min-height:44px; border:1px solid #d7e0ec; border-radius:8px; padding:6px 8px; gap:6px; font-size:12px; color:#536176; }
+.nearby-toggles button[aria-pressed=true] { border-color:var(--ui-blue); background:var(--ui-blue-soft); color:var(--ui-blue-ink); }
+.nearby-toggle-off { font-size:10px; color:var(--ui-muted); }
+.nearby-pick { display:flex; gap:7px; width:calc(100% - 24px); margin:10px 12px 12px; padding:10px 8px; min-height:44px; background:var(--ui-blue); color:#fff; border-radius:8px; font-size:12px; font-weight:600; }
+.nearby-pick:hover { background:var(--ui-blue-hover); }
+.nearby-pick.is-picking { background:#eaf2ff; color:var(--ui-blue-ink); border:1px solid #9cbaeb; }
+.nearby-filters { margin:0 12px; border-top:1px solid var(--ui-border); font-size:12px; }
+.nearby-filters>summary { display:flex; justify-content:space-between; gap:8px; cursor:pointer; min-height:44px; align-items:center; color:var(--ui-muted); }
+.nearby-filters>summary>span { color:var(--ui-blue-ink); font-size:11px; }
+.nearby-filters[open]>summary { font-weight:600; }
+.nearby-filters label { display:block; min-width:0; font-size:11px; color:var(--ui-muted); }
+.nearby-filters select,.nearby-filters input { display:block; width:100%; min-width:0; height:42px; border:1px solid #ccd7e4; border-radius:6px; background:#fff; color:var(--ui-text); font:inherit; padding:0 7px; margin:5px 0 9px; }
+.nearby-filters>div { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.nearby-filters p,.nearby-unknown p { font-size:11px; line-height:1.7; color:var(--ui-muted); padding-bottom:10px; }
+.nearby-note { font-size:11px; color:var(--ui-muted); line-height:1.75; padding:0 12px 9px; }
+.nearby-provenance { background:var(--ui-surface); padding:10px 12px; border-top:1px solid var(--ui-border); }
+.nearby-results-heading { display:flex; align-items:center; justify-content:space-between; padding:4px 12px 0; border-top:1px solid var(--ui-border); }
+.nearby-results-heading h3 { font-size:13px; }
+.nearby-results-heading button { min-height:36px; min-width:36px; color:var(--ui-muted); }
+.nearby-result { display:flex; gap:7px; min-height:70px; width:100%; padding:10px 12px; text-align:left; border-top:1px solid #edf1f6; }
+.nearby-result:hover,.nearby-result[aria-pressed=true] { background:#eff6ff; }
+.nearby-result>span:nth-child(2) { flex:1; min-width:0; }
+.nearby-result strong { display:block; font-size:12px; line-height:1.65; overflow-wrap:anywhere; }
+.nearby-result small { display:block; font-size:10px; color:var(--ui-muted); line-height:1.65; margin-top:3px; }
+.nearby-result>b { font-size:12px; color:var(--ui-blue-ink); white-space:nowrap; font-variant-numeric:tabular-nums; }
+.nearby-kind { width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; border-radius:8px; }
+.nearby-kind.shelter { background:#eaf2ff; color:#2563eb; }
+.nearby-kind.shade { background:#fff2e8; color:#ae571c; }
+.nearby-unknown { padding:10px 12px; border-top:1px solid var(--ui-border); color:var(--ui-muted); font-size:11px; }
+.nearby-unknown>summary { min-height:36px; cursor:pointer; }
+.nearby-unknown .nearby-result { padding:9px 0; }
+.nearby-selected { border:1px solid #b9d2fa; border-radius:9px; margin:10px 12px; padding:12px; background:#f8fbff; }
+.nearby-selected>div { display:flex; align-items:center; gap:6px; }
+.nearby-selected h3 { flex:1; font-size:13px; line-height:1.6; }
+.nearby-selected>div>button { min-width:30px; min-height:36px; }
+.nearby-selected>p { display:flex; align-items:flex-start; gap:5px; line-height:1.7; font-size:11px; color:var(--ui-muted); margin:9px 0; }
+.nearby-selected>p svg { margin-top:3px; }
+.nearby-selected dl { display:grid; grid-template-columns:92px 1fr; gap:7px; font-size:11px; line-height:1.7; }
+.nearby-selected dt { color:var(--ui-muted); }
+.nearby-selected dd { margin:0; overflow-wrap:anywhere; }
+.nearby-selected a { display:inline-flex; min-height:40px; align-items:center; font-size:11px; color:var(--ui-blue-ink); }
+.nearby-error { font-size:12px; padding:12px; color:#9b392f; }
+.nearby-error button { text-decoration:underline; min-height:36px; }
+.weather-refresh-details { margin:12px 0 18px; font-size:11px; color:var(--ui-muted); }
+.weather-refresh-details summary { cursor:pointer; padding:10px 0; min-height:40px; }
+.weather-refresh-details .weather-refresh { margin-top:8px; }
+.nearby-map-prompt { position:absolute; z-index:7; bottom:254px; left:calc(var(--panel-space) + 18px); max-width:calc(100% - var(--panel-space) - 94px); display:flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid #b9d2fa; border-radius:10px; background:#fff; box-shadow:0 6px 20px #15365925; font-size:12px; color:#1e40af; }
+.nearby-map-prompt button { min-height:40px; padding:0 8px; text-decoration:underline; }
+.is-picking-location canvas { cursor:crosshair!important; }
+.is-picking-location .maplibregl-marker { pointer-events:none; }
+.is-picking-location .maplibregl-popup { display:none; }
+.nearby-anchor { pointer-events:none; z-index:6; display:flex; align-items:center; flex-direction:column; padding-bottom:5px; }
+.nearby-anchor>span { background:#1d4ed8; color:#fff; padding:7px 10px; font-size:11px; border-radius:7px; box-shadow:0 3px 10px #17365440; white-space:nowrap; }
+.nearby-anchor>i { display:block; width:12px; height:12px; border-radius:50%; background:#1d4ed8; border:3px solid white; margin-top:6px; box-shadow:0 0 0 2px #1d4ed8; }
+.nearby-popup .maplibregl-popup-content { border-radius:12px; padding:14px; box-shadow:0 6px 24px #17365430; }
+.nearby-popup { z-index:7; }
+.nearby-popup-content strong,.nearby-popup-content small,.nearby-popup-content b { display:block; }
+.nearby-popup-content strong { font-size:14px; line-height:1.6; margin:4px 0; }
+.nearby-popup-content p { font-size:11px; line-height:1.7; color:#596779; margin-bottom:4px; }
+.nearby-popup-content small { font-size:10px; color:#596779; }
+.nearby-popup-content b { font-size:12px; color:#1e40af; margin-top:7px; }
+.climate-shell:has(.is-picking-location) .observation-card { display:none; }
+@media(max-width:1100px) and (min-width:761px) {
+ .climate-shell:has(.has-observations) .weather-map-notice { bottom:260px; }
+ .climate-shell .observation-card { width:260px; padding:12px 14px; }
+ .observation-reading strong { font-size:39px; }
+ .climate-shell .observation-card h2 { margin:9px 0 7px; }
+ .observation-card .observation-facts { padding-top:7px; margin-top:7px; gap:8px; }
+ .observation-card .observation-facts dd { font-size:16px; margin-top:2px; }
+ .observation-card .observation-actions { margin-top:5px; padding-top:0; }
+ .climate-shell .observation-card .observation-basis { margin-top:4px; }
+}
+@media(max-width:760px) {
+ .climate-shell .observation-card { top:205px; right:66px; left:10px; width:auto; padding:10px 12px; }
+ .climate-shell:not(.board-hidden) .observation-card { display:none; }
+ .climate-shell .observation-card h2 { font-size:15px; margin:7px 0 3px; }
+ .observation-card .observation-heading { font-size:10px; }
+ .observation-reading strong { font-size:34px; }
+ .observation-reading strong small { font-size:18px; }
+ .observation-reading>svg { width:30px; height:30px; }
+ .observation-card .observation-facts { position:absolute; top:52px; right:12px; border:0; padding:0; margin:0; display:flex; flex-direction:column; gap:5px; }
+ .observation-facts>div { display:flex; align-items:center; gap:8px; justify-content:space-between; }
+ .observation-facts dt { font-size:10px; }
+ .observation-facts dd { font-size:14px; margin:0; }
+ .observation-reading>svg { display:none; }
+ .observation-card .observation-actions { margin-top:6px; padding-top:3px; }
+ .observation-card .observation-actions button { min-height:36px; }
+ .climate-shell .observation-card .observation-basis { display:block; margin-top:4px; font-size:9px; }
+ .has-observations .timeline-scale { height:84px; }
+ .has-observations .timeline-playhead>span { font-size:10px; }
+ .timeline-playhead>span b { font-size:11px; padding-left:5px; margin-left:5px; }
+ .climate-shell .timeline-focus-toggle,.climate-shell .timeline-calendar-toggle { width:36px; min-width:36px; height:40px; }
+ .climate-shell .timeline-date-control { gap:4px; }
+ .climate-shell .timeline-title strong { font-size:10px; }
+ .climate-shell .timeline-title .timeline-status-dot { display:none; }
+ .climate-shell:has(.has-observations) .floating-detail { bottom:239px; max-height:calc(100dvh - 445px); }
+ .climate-shell:has(.has-observations) .weather-map-notice { bottom:268px; }
+ .climate-shell:has(.has-observations) .zoom-tools { bottom:259px; }
+ .climate-shell:has(.has-observations) .map-boundary-badge { bottom:223px; }
+ .nearby-map-prompt { top:205px; bottom:auto; left:10px; right:66px; max-width:none; font-size:11px; }
+}
+@media(max-height:550px) and (min-width:761px) {
+ .climate-shell .observation-card { display:none; }
+ .climate-shell:has(.has-observations) .disaster-legend,.climate-shell:has(.has-observations) .weather-map-notice { display:none; }
+ .nearby-map-prompt { top:65px; bottom:auto; left:360px; right:65px; font-size:11px; }
+ .has-observations .timeline-scale { height:67px; }
+}
+@media(prefers-reduced-motion:no-preference) {
+ .observation-marker { transition:background-color .15s,border-color .15s,box-shadow .15s; }
+}

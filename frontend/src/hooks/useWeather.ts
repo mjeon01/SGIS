@@ -10,6 +10,7 @@ export function useWeather(enabled:boolean,stationId:string,onStationChange:(id:
   const [period,setPeriod]=useState<'recent'|'summer'>('recent'),[date,setDate]=useState('');
   const [job,setJob]=useState<Job>({state:'idle',message:null});
   const [focus,setFocus]=useState<WeatherMapLayer['focus']>(null);
+  const [fitRequest,setFitRequest]=useState(0);
   const loadedRetry=useRef(-1);
   useEffect(()=>{
     if(!enabled||loadedRetry.current===retry)return;
@@ -45,9 +46,9 @@ export function useWeather(enabled:boolean,stationId:string,onStationChange:(id:
   const focusStation=()=>{if(station?.location)setFocus({id:Date.now(),longitude:station.location.longitude,latitude:station.location.latitude});};
   const layer=useMemo<WeatherMapLayer|null>(()=>comparison?{
     kind:'weather',observed_on:observedOn,stations:comparison.stations,
-    selectedStationId:station?.station_id||'',onSelect:onStationChange,focus,
-  }:null,[comparison,observedOn,station?.station_id,onStationChange,focus]);
+    selectedStationId:station?.station_id||'',onSelect:onStationChange,focus,fitRequest,
+  }:null,[comparison,observedOn,station?.station_id,onStationChange,focus,fitRequest]);
   return {data:comparison,snapshot:data,error,period,setPeriod:changePeriod,date:observedOn,setDate,dates,
-    station,series:station?.[period],job,refresh,focus:focusStation,layer,retry:()=>setRetry(n=>n+1)};
+    station,series:station?.[period],job,refresh,focus:focusStation,fitStations:()=>setFitRequest(n=>n+1),layer,retry:()=>setRetry(n=>n+1)};
 }
 export type WeatherController=ReturnType<typeof useWeather>;

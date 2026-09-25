@@ -39,6 +39,7 @@ export type WeatherMapLayer = {
   kind:'weather'; observed_on:string; stations:WeatherComparison['stations'];
   selectedStationId:string; onSelect:(id:string)=>void;
   focus:{id:number;longitude:number;latitude:number}|null;
+  fitRequest?:number;
 };
 export type DisasterMapLayer =
   | {kind:'base'} | {kind:'heat'} | {kind:'facilities'} | FloodMapLayer | WeatherMapLayer

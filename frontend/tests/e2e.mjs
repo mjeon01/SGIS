@@ -251,6 +251,7 @@ try {
  await page.getByLabel('기상 관측소',{exact:true}).selectOption('968');
  await expect(page.locator('.weather-latest')).toContainText('미확인');
  await page.getByLabel('기상 관측소',{exact:true}).selectOption('159');
+ await page.locator('.weather-refresh-details summary').click();
  await page.getByRole('button',{name:'기상청 자료 갱신',exact:true}).click();
  await expect(page.getByRole('button',{name:'기상청 자료 갱신',exact:true})).toBeEnabled();
  await explore();

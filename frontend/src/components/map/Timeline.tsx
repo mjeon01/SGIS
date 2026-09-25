@@ -1,7 +1,7 @@
 'use client';
 import {useEffect, useId, useMemo, useRef, useState} from 'react';
 import type {CSSProperties, KeyboardEvent} from 'react';
-import {CalendarDays, ChevronLeft, ChevronRight, Pause, Play, RotateCcw, X} from 'lucide-react';
+import {CalendarDays, ChevronLeft, ChevronRight, Maximize2, PanelLeft, Pause, Play, RotateCcw, X} from 'lucide-react';
 import {timelineScale, timeLabel} from './timeline-scale';
 
 type Props = {
@@ -9,10 +9,12 @@ type Props = {
   disabledReason?:string; hourly?:boolean; playRequest?:number; pauseRequest?:number;
   resetToken?:string; onPlay?:()=>void; caption?:string; context?:string;
   highlight?:{value:string; label:string; onSelect?:()=>void};
+  metric?:{label:string;unit:string;records:{timestamp:string;value:number|null;color:string}[]};
+  focusControl?:{focused:boolean;onToggle:()=>void};
 };
 
 /** Shared time control; only stored observations are selectable. */
-export default function Timeline({title,steps,value,onChange,disabledReason,hourly=false,playRequest=0,pauseRequest=0,resetToken,onPlay,caption,context,highlight}:Props) {
+export default function Timeline({title,steps,value,onChange,disabledReason,hourly=false,playRequest=0,pauseRequest=0,resetToken,onPlay,caption,context,highlight,metric,focusControl}:Props) {
   const [playing,setPlaying]=useState(false),[speed,setSpeed]=useState(1);
   const [calendar,setCalendar]=useState(false),[hover,setHover]=useState<number|null>(null),[width,setWidth]=useState(600);
   const scaleRef=useRef<HTMLDivElement>(null),dateRef=useRef<HTMLInputElement>(null),calendarButton=useRef<HTMLButtonElement>(null);
@@ -22,6 +24,8 @@ export default function Timeline({title,steps,value,onChange,disabledReason,hour
   const disabled=!!disabledReason||steps.length<2;
   const selected=steps[index]||'',percent=scale.position(index);
   const highlightIndex=highlight?steps.indexOf(highlight.value):-1;
+  const readings=useMemo(()=>new Map(metric?.records.map(r=>[r.timestamp,r])||[]),[metric]);
+  const reading=(at:number)=>{const v=readings.get(steps[at])?.value;return v==null?'관측 없음':`${v.toFixed(1)}${metric?.unit||''}`;};
   useEffect(()=>{
     const element=scaleRef.current;if(!element)return;
     const observer=new ResizeObserver(entries=>setWidth(entries[0].contentRect.width));
@@ -51,10 +55,10 @@ export default function Timeline({title,steps,value,onChange,disabledReason,hour
     if(next!=null){event.preventDefault();move(Math.max(0,Math.min(steps.length-1,next)));}
     if(event.key===' '){event.preventDefault();play();}
   };
-  return <section className={`map-timeline ${disabled?'is-disabled':''} ${playing?'is-playing':''}`} aria-label={title} data-resolution={hourly?'hourly':'daily'}>
+  return <section className={`map-timeline ${disabled?'is-disabled':''} ${playing?'is-playing':''} ${metric?'has-observations':''}`} aria-label={title} data-resolution={hourly?'hourly':'daily'}>
     <div className="timeline-heading">
       <div className="timeline-title"><span className="timeline-status-dot"/><strong>{title}</strong>{context&&<span className="timeline-context" title={context}>{context}</span>}</div>
-      <div className="timeline-date-control"><span className="timeline-record-badge">과거 기록</span><time dateTime={value}>{disabled?'시간 탐색 대기':timeLabel(selected,hourly,'full')}</time>{!disabled&&<><span className="timeline-timezone">KST</span><button ref={calendarButton} className="timeline-calendar-toggle" aria-label="날짜 바로 선택" aria-expanded={calendar} aria-controls={`${id}-calendar`} onClick={()=>{setPlaying(false);setCalendar(v=>!v);}}><CalendarDays size={17}/></button></>}</div>
+      <div className="timeline-date-control"><span className="timeline-record-badge">과거 기록</span><time dateTime={value}>{disabled?'시간 탐색 대기':timeLabel(selected,hourly,'full')}</time>{!disabled&&<><span className="timeline-timezone">KST</span><button ref={calendarButton} className="timeline-calendar-toggle" aria-label="날짜 바로 선택" aria-expanded={calendar} aria-controls={`${id}-calendar`} onClick={()=>{setPlaying(false);setCalendar(v=>!v);}}><CalendarDays size={17}/></button>{focusControl&&<button className="timeline-focus-toggle" aria-label={focusControl.focused?'상세 함께 보기':'지도 크게 보기'} aria-pressed={focusControl.focused} title={focusControl.focused?'상세 함께 보기':'지도 크게 보기'} onClick={focusControl.onToggle}>{focusControl.focused?<PanelLeft size={17}/>:<Maximize2 size={17}/>}</button>}</>}</div>
     </div>
     {disabled?<div className="timeline-unavailable"><Play size={18} aria-hidden="true"/><p id={id}>{disabledReason||'시간을 비교할 관측기록이 부족합니다.'}</p><input type="range" aria-label={hourly?'관측 시각':'관측 날짜'} disabled aria-describedby={id} min={0} max={1} value={0} readOnly/></div>:<>
       <div className="timeline-main">
@@ -66,19 +70,23 @@ export default function Timeline({title,steps,value,onChange,disabledReason,hour
         <div ref={scaleRef} className="timeline-scale" style={{'--progress':`${percent}%`} as CSSProperties}>
           <div className="timeline-ruler" aria-hidden="true">
             <div className="timeline-elapsed"/>
+            {metric&&<div className="timeline-data-strip">{steps.map((step,i)=>{
+              const row=readings.get(step),left=i===0?0:(scale.position(i-1)+scale.position(i))/2,right=i===steps.length-1?100:(scale.position(i)+scale.position(i+1))/2;
+              return <i key={step} className={row?.value==null?'is-missing':''} data-date={step} data-value={row?.value??''} style={{left:`${left}%`,width:`${right-left}%`,backgroundColor:row?.value==null?undefined:row.color}}/>;
+            })}</div>}
             {scale.minor.map(tick=><i key={tick} className="timeline-minor-tick" style={{left:`${scale.position(tick)}%`}}/>)}
             {scale.ticks.map((tick,i)=><span key={tick} className={`timeline-tick ${i===0?'is-first':i===scale.ticks.length-1?'is-last':''}`} style={{left:`${scale.position(tick)}%`}}><i/><span>{timeLabel(steps[tick],hourly,'tick')}</span><small>{timeLabel(steps[tick],hourly,'subtick')}</small></span>)}
             {highlightIndex>=0&&<i className="timeline-highlight-mark" style={{left:`${scale.position(highlightIndex)}%`}} title={highlight?.label}/>}
-            <div className="timeline-playhead" style={{left:`${percent}%`}}><span style={{transform:`translateX(-${percent}%)`}}>{timeLabel(selected,hourly,'cursor')}</span><i/></div>
-            {hover!=null&&hover!==index&&<div className="timeline-hover" style={{left:`${scale.position(hover)}%`,transform:`translateX(-${scale.position(hover)}%)`}}>{timeLabel(steps[hover],hourly,'cursor')}</div>}
+            <div className="timeline-playhead" style={{left:`${percent}%`}}><span style={{transform:`translateX(-${percent}%)`}}>{timeLabel(selected,hourly,'cursor')}{metric&&<b>{reading(index)}</b>}</span><i/></div>
+            {hover!=null&&hover!==index&&<div className="timeline-hover" style={{left:`${scale.position(hover)}%`,transform:`translateX(-${scale.position(hover)}%)`}}>{timeLabel(steps[hover],hourly,'cursor')}{metric&&<b>{reading(hover)}</b>}</div>}
           </div>
-          <input type="range" aria-label={hourly?'관측 시각':'관측 날짜'} aria-valuetext={timeLabel(selected,hourly,'full')+' 한국시간'} min={scale.start} max={scale.end} step={1} value={scale.times[index]??scale.start}
+          <input type="range" aria-label={hourly?'관측 시각':'관측 날짜'} aria-valuetext={timeLabel(selected,hourly,'full')+' 한국시간'+(metric?` · ${metric.label} ${reading(index)}`:'')} min={scale.start} max={scale.end} step={1} value={scale.times[index]??scale.start}
             onKeyDown={keyMove} onChange={e=>move(scale.nearest(Number(e.target.value)))}
             onPointerDown={()=>{setPlaying(false);setHover(null);}} onPointerLeave={()=>setHover(null)}
             onPointerMove={e=>{if(e.pointerType!=='mouse'||e.buttons)return;const box=e.currentTarget.getBoundingClientRect();setHover(scale.nearest(scale.start+Math.max(0,Math.min(1,(e.clientX-box.left)/box.width))*(scale.end-scale.start)));}}/>
         </div>
       </div>
-      <div className="timeline-footer"><span className="timeline-caption">{caption||(hourly?'기록된 시각의 태풍 위치':'일별 관측기록')}<span className="timeline-record-count"> · {steps.length}개 기록</span></span><div className="timeline-options">
+      <div className="timeline-footer"><span className="timeline-caption">{caption||(metric?`${context||'선택 관측소'} · ${metric.label}`:hourly?'기록된 시각의 태풍 위치':'일별 관측기록')}<span className="timeline-record-count"> · {steps.length}개 기록</span></span><div className="timeline-options">
         {highlightIndex>=0&&<button className="timeline-highlight-button" onClick={()=>{move(highlightIndex);highlight?.onSelect?.();}}><i/>{highlight?.label}</button>}
         <label className="timeline-speed"><span>속도</span><select aria-label="재생 속도" value={speed} onChange={e=>setSpeed(Number(e.target.value))}>{[.5,1,2,4].map(n=><option key={n} value={n}>{n}×</option>)}</select></label>
       </div></div>

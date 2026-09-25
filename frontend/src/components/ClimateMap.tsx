@@ -5,6 +5,8 @@ import type { GeoData, Layer, MapProperties, Facility } from '@/types';
 import type { Geometry } from 'geojson';
 import type {DisasterMapLayer,MapCamera} from '@/types/disasters';
 import FloodLayer from './map/FloodLayer';
+import NearbyFacilityLayer from './map/NearbyFacilityLayer';
+import type {NearbyFacilitiesController} from '@/hooks/useNearbyFacilities';
 import WeatherLayer from './map/WeatherLayer';
 import LandslideLayer from './map/LandslideLayer';
 import TyphoonLayer from './map/TyphoonLayer';
@@ -15,6 +17,7 @@ import { COLORS, fmt, INDICATORS, LAYERS } from './constants';
 type Props = {
   dataReady:boolean; data: GeoData; context: GeoData | null; parent: string; selected: string | null; layer: Layer;
   overview: GeoData | null;
+  nearby?:NearbyFacilitiesController|null;
   summaryMode: boolean;
   candidateCodes?:string[];
   onDisplayLevel: (level: 'sigungu' | 'dong' | 'sido') => void;
@@ -61,6 +64,7 @@ export default function ClimateMap(props: Props) {
     const current = map.current;
     if (!current) return;
     const p = propsRef.current;
+    if(p.nearby?.picking)return;
     if (p.overview && current.getZoom() < DETAIL_ZOOM && code.length === 5) {
       const feature = p.overview.features.find(f => f.properties.region_code === code);
       if (feature) {
@@ -121,6 +125,7 @@ export default function ClimateMap(props: Props) {
       setReady(true);
     });
     current.on('mousemove', 'areas', event => {
+      if(propsRef.current.nearby?.picking){current.getCanvas().style.cursor='crosshair';popup.remove();return;}
       current.getCanvas().style.cursor = 'pointer';
       const p = event.features?.[0]?.properties as MapProperties | undefined;
       if (!p) return;
@@ -139,6 +144,8 @@ export default function ClimateMap(props: Props) {
     });
     current.on('mouseleave', 'areas', () => { current.getCanvas().style.cursor = ''; popup.remove(); });
     current.on('click', 'areas', event => {
+      if(propsRef.current.nearby?.picking)return;
+      if(current.getLayer('nearby-facility-icons')&&current.queryRenderedFeatures(event.point,{layers:['nearby-facility-icons']}).length)return;
       if(current.queryRenderedFeatures(event.point,{layers:['readiness-hit']}).length)return;
       if (['landslide-points','typhoon-positions'].some(id=>current.getLayer(id)&&current.queryRenderedFeatures(event.point,{layers:[id]}).length)) return;
       if (propsRef.current.mapLayer.kind === 'flood' && current.queryRenderedFeatures(event.point, {layers:['flood-history']}).length) return;
@@ -157,17 +164,29 @@ export default function ClimateMap(props: Props) {
     current.on('mouseenter','flood-history',()=>{current.getCanvas().style.cursor='pointer';});
     current.on('mouseleave','flood-history',()=>{current.getCanvas().style.cursor='';});
     current.on('dblclick', 'areas', event => {
+      if(propsRef.current.nearby?.picking)return;
       const code = event.features?.[0]?.properties?.region_code;
       if (code && code.length < 8) propsRef.current.onDrill(code);
     });
+    current.on('click',event=>{if(propsRef.current.nearby?.picking){popup.remove();propsRef.current.nearby.pick({longitude:event.lngLat.lng,latitude:event.lngLat.lat});}});
+    const keyboardPick=(event:KeyboardEvent)=>{
+      if(!propsRef.current.nearby?.picking)return;
+      if(event.key==='Escape'){event.preventDefault();propsRef.current.nearby.cancelPicking();}
+      if(event.key==='Enter'){event.preventDefault();const point=current.getCenter();propsRef.current.nearby.pick({longitude:point.lng,latitude:point.lat});}
+    };
+    current.getCanvas().addEventListener('keydown',keyboardPick);
     const observer = new ResizeObserver(() => {
       const canvas = current.getCanvas();
       const element = current.getContainer();
       if (canvas.clientWidth !== element.clientWidth || canvas.clientHeight !== element.clientHeight) current.resize();
     });
     observer.observe(container.current);
-    return () => { observer.disconnect(); labels.current.forEach(m => m.remove()); popup.remove(); current.remove(); map.current = null; };
+    return () => { current.getCanvas().removeEventListener('keydown',keyboardPick); observer.disconnect(); labels.current.forEach(m => m.remove()); popup.remove(); current.remove(); map.current = null; };
   }, []);
+
+  useEffect(()=>{
+    if(ready&&map.current)map.current.getCanvas().style.cursor=props.nearby?.picking?'crosshair':'';
+  },[ready,props.nearby?.picking]);
 
   useEffect(()=>{
     if(!ready||!map.current)return;
@@ -280,8 +299,9 @@ export default function ClimateMap(props: Props) {
 
   useEffect(() => { if (ready && props.zoom.id) map.current?.zoomTo((map.current?.getZoom() || 6) + props.zoom.step, {duration: 250}); }, [ready, props.zoom]);
 
-  return <><div className={`map-canvas ${props.mapLayer.kind==='weather'?'weather-map':''}`} data-ready={rendered} data-map-instance={instanceId.current} data-layer={props.mapLayer.kind} data-display-level={displayLevel} data-feature-count={displayData.features.length} data-flood-layer={flood?.tab} ref={container} aria-label="우리 동네 기후재해 지도">{error && <div className="map-error">지도 표시를 위해 브라우저의 WebGL 지원이 필요합니다. 지역 목록에서도 상세 통계를 확인할 수 있습니다.</div>}</div>
+  return <><div className={`map-canvas ${props.mapLayer.kind==='weather'?'weather-map':''} ${props.nearby?.picking?'is-picking-location':''}`} data-nearby-count={props.nearby?.rows.length||0} data-ready={rendered} data-map-instance={instanceId.current} data-layer={props.mapLayer.kind} data-display-level={displayLevel} data-feature-count={displayData.features.length} data-flood-layer={flood?.tab} ref={container} aria-label="우리 동네 기후재해 지도">{error && <div className="map-error">지도 표시를 위해 브라우저의 WebGL 지원이 필요합니다. 지역 목록에서도 상세 통계를 확인할 수 있습니다.</div>}</div>
     <FloodLayer map={ready?map.current:null} layer={flood}/>
+    <NearbyFacilityLayer map={ready?map.current:null} controller={props.nearby||null}/>
     <WeatherLayer map={ready?map.current:null} layer={props.mapLayer.kind==='weather'?props.mapLayer:null}/>
     <LandslideLayer map={ready?map.current:null} layer={props.mapLayer.kind==='landslide'?props.mapLayer:null}/>
     <TyphoonLayer map={ready?map.current:null} layer={props.mapLayer.kind==='typhoon'?props.mapLayer:null}/>
