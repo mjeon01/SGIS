@@ -20,7 +20,7 @@ await page.route('**/api/current-weather/refresh',route=>route.fulfill({json:{st
 const shot=async name=>{await expect(page.locator('.detail-loading')).toHaveCount(0);await expect(page.locator('.updating-pill')).toHaveCount(0);await expect(page.locator('.map-canvas')).toHaveAttribute('data-ready','true');await page.waitForTimeout(750);await page.screenshot({path:path.join(root,'var/regression-screenshots',name+'.png'),fullPage:true});};
 const explore=()=>chooseNavigation(page,'지역 탐색');
 try {
- await page.goto(process.env.APP_URL||'http://127.0.0.1:3018');
+ await page.goto(process.env.APP_URL||'http://127.0.0.1:3018');await page.getByRole('button',{name:'건너뛰기',exact:true}).click();
  await expect(page.locator('.map-statusbar')).toContainText('206개 지역',{timeout:30000});
  await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
  await expect(page.locator('.readiness-finder')).toBeVisible();

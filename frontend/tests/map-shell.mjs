@@ -13,7 +13,7 @@ await page.route('https://tile.openstreetmap.org/**',r=>r.fulfill({contentType:'
 const choose=name=>chooseNavigation(page,name);
 const shot=async name=>{await page.waitForTimeout(400);await page.screenshot({path:path.join(output,name+'.png')});};
 try{
- await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');
+ await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');await page.getByRole('button',{name:'건너뛰기',exact:true}).click();
  await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
  await expect(page.locator('.map-canvas')).toHaveAttribute('data-ready','true');
  const instance=await page.locator('.map-canvas').getAttribute('data-map-instance');

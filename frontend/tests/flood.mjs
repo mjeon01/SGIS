@@ -12,7 +12,7 @@ page.on('console',m=>{if(['warning','error'].includes(m.type()))messages.push(m.
 page.on('pageerror',e=>messages.push(e.message));
 await page.route('https://tile.openstreetmap.org/**',r=>r.fulfill({contentType:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVR4nGP4DwQACfsD/fteaysAAAAASUVORK5CYII=','base64')}));
 try{
- await page.goto(process.env.APP_URL||'http://127.0.0.1:3018');
+ await page.goto(process.env.APP_URL||'http://127.0.0.1:3018');await page.getByRole('button',{name:'건너뛰기',exact:true}).click();
  await chooseNavigation(page,'침수');
  await expect(page.locator('.flood-count strong')).toHaveText('186건');
  await expect(page.locator('.map-attribution')).toContainText('OpenStreetMap');

@@ -9,7 +9,7 @@ const page=await browser.newPage({viewport:{width:1440,height:1000}});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const shot=async name=>{await page.waitForTimeout(550);await page.screenshot({path:path.join(root,'var/regression-screenshots',name+'.png'),fullPage:true});};
 try{
- await page.goto(process.env.APP_URL||'http://127.0.0.1:3018');
+ await page.goto(process.env.APP_URL||'http://127.0.0.1:3018');await page.getByRole('button',{name:'건너뛰기',exact:true}).click();
  await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
  const comparison=await(await page.request.get(new URL('/api/current-weather/comparison',page.url()).href)).json();
  await page.getByRole('combobox',{name:'동네 이름 검색'}).fill('우1동');

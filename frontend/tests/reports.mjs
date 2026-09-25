@@ -17,7 +17,7 @@ const select=async name=>{
 };
 try {
   const before=await (await page.request.get(base+'/api/risk?parent_code=21&mode=sgis&level=dong')).json();
-  await page.goto(base);
+  await page.goto(base);await page.getByRole('button',{name:'건너뛰기',exact:true}).click();
   await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
   await select('부곡4동');
   await selectAnalysisTab(page,'대응방안');

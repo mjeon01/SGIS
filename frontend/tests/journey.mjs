@@ -13,7 +13,7 @@ const search=async name=>{const input=page.getByRole('combobox',{name:'동네 �
 const api=async url=>(await page.request.get(new URL('/api'+url,page.url()).href)).json();
 const sameRegion=code=>expect(page.locator('main')).toHaveAttribute('data-region',code);
 try{
- await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');
+ await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');await page.getByRole('button',{name:'건너뛰기',exact:true}).click();
  await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
  await expect(page.locator('.map-canvas')).toHaveAttribute('data-ready','true');
  const instance=await page.locator('.map-canvas').getAttribute('data-map-instance');

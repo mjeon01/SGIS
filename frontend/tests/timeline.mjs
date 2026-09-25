@@ -13,7 +13,7 @@ const time=()=>page.locator('.timeline-heading time').getAttribute('datetime');
 const shot=async name=>{await page.waitForTimeout(350);await page.screenshot({path:path.join(output,name+'.png')});};
 const search=async name=>{await page.getByRole('combobox',{name:'동네 이름 검색'}).fill(name);await page.getByRole('combobox',{name:'동네 이름 검색'}).press('Enter');};
 try{
- await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
+ await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');await page.getByRole('button',{name:'건너뛰기',exact:true}).click();await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
  await search('부곡4동');await choose('태풍');await expect(page.locator('.typhoon-closest')).toContainText('10.1');
  const track=await(await page.request.get(new URL('/api/typhoons/2022-11?region=21110600',page.url()).href)).json();
  await choose('전체 태풍 경로 보기');await page.waitForTimeout(650);

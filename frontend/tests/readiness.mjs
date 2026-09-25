@@ -11,7 +11,7 @@ const click=name=>chooseNavigation(page,name);
 const screenshot=async name=>{await page.waitForTimeout(500);await page.screenshot({path:path.join(out,name+'.png')});};
 const list=()=>page.getByRole('button',{name:/^점검 목록 \d+곳$/}).click();
 try {
- await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');
+ await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');await page.getByRole('button',{name:'건너뛰기',exact:true}).click();
  await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
  await expect(page.locator('.readiness-finder')).toBeVisible();
  await expect(page.locator('.basemap-toggle')).toHaveCount(0);

@@ -11,7 +11,7 @@ const errors=[],requests=[];page.on('pageerror',e=>errors.push(e.message));page.
 const choose=name=>chooseNavigation(page,name),api=async pathname=>(await page.request.get(new URL(pathname,page.url()).href)).json();
 const shot=async name=>page.screenshot({path:path.join(output,name+'.png')});
 try{
- await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
+ await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');await page.getByRole('button',{name:'건너뛰기',exact:true}).click();await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
  const instance=await page.locator('.map-canvas').getAttribute('data-map-instance');
  await choose('기상 비교');await expect(page.getByLabel('선택 관측소 기온')).toBeVisible();
  const comparison=await api('/api/current-weather/comparison');

@@ -19,7 +19,7 @@ const visiblePoint=async()=>{
  }
 };
 try{
- await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');
+ await page.goto(process.env.APP_URL||'http://127.0.0.1:3019');await page.getByRole('button',{name:'건너뛰기',exact:true}).click();
  await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
  await page.getByRole('combobox',{name:'동네 이름 검색'}).fill('부곡4동');await page.getByRole('combobox',{name:'동네 이름 검색'}).press('Enter');
  await choose('태풍');await expect(page.locator('.typhoon-closest')).toContainText('10.1');

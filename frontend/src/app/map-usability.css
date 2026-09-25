@@ -1,5 +1,5 @@
 /* Reading and controls share one left edge; the remaining map stays clear. */
-.app-shell.climate-shell{--panel-width:370px;--panel-space:402px}
+.app-shell.climate-shell{--panel-width:440px;--panel-space:472px}
 .climate-shell.board-hidden{--panel-space:0px}
 .hazard-dock{width:var(--panel-width);max-width:none}
 .climate-shell .floating-detail{left:16px;right:auto;top:222px;bottom:38px;background:#fff}
@@ -67,7 +67,7 @@
 .landslide-map-label{background:#7f5e36;color:#fff;font-size:12px;padding:6px 10px;border-radius:7px;box-shadow:0 2px 9px #59411e30;pointer-events:none}
 .typhoon-position.label-left .typhoon-position-label{left:auto;right:45px}
 @media(max-width:1100px) and (min-width:761px){
- .app-shell.climate-shell{--panel-width:330px;--panel-space:362px}.climate-shell.board-hidden{--panel-space:0px}
+ .app-shell.climate-shell{--panel-width:360px;--panel-space:392px}.climate-shell.board-hidden{--panel-space:0px}
  .map-story-card{width:285px;padding:12px 14px}.climate-shell .timeline-dock{width:calc(100% - var(--panel-space) - 105px)}
 }
 @media(max-width:760px){
