@@ -16,10 +16,12 @@ from .services.weather.regional import nearest_current_station
 from .services.weather.comparison import build_comparison
 from .services.facilities import filtered
 from .services.flood import inventory as flood_inventory
+from .routes.disasters import router_for
 
 app = FastAPI(title='기후안심지도 API', version='0.1.0')
 app.add_middleware(CORSMiddleware, allow_origins=['http://127.0.0.1:3000', 'http://localhost:3000'], allow_methods=['GET', 'POST'], allow_headers=['Content-Type'])
 repo = DatasetRepository()
+app.include_router(router_for(repo))
 Parent = Annotated[str, Query(pattern=r'^(?:00|\d{2}|\d{5})$')]
 Code = Annotated[str, Path(pattern=r'^[0-9]{2}(?:[0-9]{3}(?:[0-9]{3})?)?$')]
 LAYERS = {'risk', 'hazard', 'exposure', 'vulnerability', *INDICATORS}

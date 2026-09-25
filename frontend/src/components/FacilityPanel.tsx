@@ -1,15 +1,15 @@
 'use client';
-import {MapPin, Umbrella, Building2, Search, X} from 'lucide-react';
+import {ArrowLeft, Thermometer, MapPin, Umbrella, Building2, Search, X} from 'lucide-react';
 import {useState} from 'react';
 import type {Facility, FacilityData, FacilityFilters} from '@/types';
 
-type Props={data:FacilityData|null; error:string|null; region:string; kind:string; rows:Facility[]; selected:Facility|null; onRegion:(code:string)=>void; onKind:(kind:string)=>void; onSelect:(row:Facility|null)=>void; onRetry:()=>void;filters:FacilityFilters;onFilters:(v:FacilityFilters)=>void};
-export default function FacilityPanel({data,error,region,kind,rows,selected,onRegion,onKind,onSelect,onRetry,filters,onFilters}:Props){
+type Props={place:string;onWeather:()=>void;data:FacilityData|null; error:string|null; region:string; kind:string; rows:Facility[]; selected:Facility|null; onRegion:(code:string)=>void; onKind:(kind:string)=>void; onSelect:(row:Facility|null)=>void; onRetry:()=>void;filters:FacilityFilters;onFilters:(v:FacilityFilters)=>void};
+export default function FacilityPanel({data,error,region,kind,rows,selected,onRegion,onKind,onSelect,onRetry,filters,onFilters,place,onWeather}:Props){
  const [query,setQuery]=useState('');
  const filtered=rows.filter(r=>(r.name+' '+r.address).includes(query.trim()));
  const district=region.length>=5?region.slice(0,5):'';
  return <aside className="facility-panel" aria-label="현재 시설 목록">
-  <div className="facility-heading"><span className="eyebrow">FACILITIES · 2026</span><h1>지금 우리 동네의<br/>쉼터와 그늘막</h1><p>공식 자료에 등록된 시설 위치를 살펴보세요.</p><div className="facility-year-note">2026년 시설 현황 · 취약성 분석과 별도 화면</div></div>
+  <div className="facility-heading"><span className="eyebrow">폭염 대비 · 더위 피할 곳</span><h1>더위를 피할 곳 찾기</h1><p>{place}의 공식 등록 쉼터와 그늘막을 확인합니다.</p><div className="facility-year-note">2026년 등록시설 · 실시간 개방 여부는 확인이 필요합니다.</div><button className="facility-weather-return" onClick={onWeather}><ArrowLeft size={14}/><Thermometer size={15}/>선택 동네의 기온 기록 확인</button></div>
   {error?<div role="alert" className="facility-error"><p>{error}</p><button onClick={onRetry}>다시 불러오기</button></div>:!data?<p className="facility-loading">시설자료를 불러오고 있습니다…</p>:<>
   <div className="facility-filters"><div className="region-selectors"><label><span>구·군</span><select aria-label="시설 구·군" value={district} onChange={e=>{onRegion(e.target.value||'21');setQuery('');}}><option value="">부산 전체</option>{data.regions.filter(r=>r.region_level==='sigungu').map(r=><option key={r.region_code} value={r.region_code}>{r.region_name}</option>)}</select></label><label><span>읍면동</span><select aria-label="시설 읍면동" value={region.length===8?region:''} disabled={!district} onChange={e=>onRegion(e.target.value||district)}><option value="">전체 읍면동</option>{data.regions.filter(r=>r.parent_region_code===district).map(r=><option key={r.region_code} value={r.region_code}>{r.region_name}</option>)}</select></label></div>
    <div className="facility-kind" role="group" aria-label="시설 유형">{[{key:'all',label:'전체'},{key:'shelter',label:'무더위쉼터'},{key:'shade',label:'그늘막'}].map(k=><button key={k.key} aria-pressed={kind===k.key} onClick={()=>onKind(k.key)}>{k.label}</button>)}</div>

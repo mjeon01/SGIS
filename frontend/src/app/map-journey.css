@@ -1,0 +1,70 @@
+/* A place-first workflow; map paint and controls stay in their existing styles. */
+.disaster-picker { position:relative; z-index:6; }
+.disaster-picker-trigger { width:100%; min-height:66px; padding:10px 14px; gap:12px; text-align:left; border:1px solid var(--ui-border); border-radius:12px; background:#fff; box-shadow:0 3px 18px #0f172a08; }
+.disaster-picker-icon { width:38px; height:38px; display:grid; place-items:center; flex-shrink:0; border-radius:10px; color:var(--ui-blue); background:var(--ui-blue-soft); }
+.disaster-picker-trigger>span:nth-child(2) { flex:1; }
+.disaster-picker-trigger small { display:block; font-size:10px; color:var(--ui-muted); line-height:1.6; }
+.disaster-picker-trigger strong { display:block; font-size:16px; color:var(--ui-text); line-height:1.5; }
+.disaster-picker-change { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--ui-muted); }
+.disaster-picker-trigger[aria-expanded=true] .disaster-picker-change svg { transform:rotate(180deg); }
+.hazard-dock:has(.disaster-picker-trigger[aria-expanded=true]) { z-index:24; }
+.disaster-picker-popover { position:absolute; top:calc(100% + 6px); left:0; right:0; padding:8px; border:1px solid var(--ui-border); border-radius:12px; background:#fff; box-shadow:0 12px 35px #0f172a26; max-height:calc(100dvh - 160px); overflow:auto; }
+.disaster-picker-popover>p { padding:5px 7px 10px; color:var(--ui-muted); font-size:11px; }
+.climate-shell .disaster-picker-popover .disaster-switch { display:flex; flex-direction:column; border:0; padding:0; gap:3px; box-shadow:none; }
+.climate-shell .disaster-picker-popover .disaster-switch button { width:100%; height:auto; min-height:60px; padding:9px 12px; flex-direction:row; gap:12px; text-align:left; }
+.climate-shell .disaster-picker-popover .disaster-switch button>span { flex:1; }
+.climate-shell .disaster-picker-popover .disaster-switch b { display:block; font-size:13px; font-weight:600; }
+.climate-shell .disaster-picker-popover .disaster-switch small { display:block; color:var(--ui-muted); font-size:11px; margin-top:3px; opacity:1; }
+.climate-shell .disaster-picker-popover .disaster-switch button[aria-pressed=true] { background:var(--ui-blue-soft); color:var(--ui-blue-ink); }
+.climate-shell .heat-journey { gap:3px; }
+.climate-shell .heat-journey button { flex:1; min-width:0; padding:7px 5px; gap:5px; font-size:11px; }
+.journey-number { width:19px; height:19px; display:grid; place-items:center; font-size:10px; border-radius:50%; background:#f1f5f9; color:var(--ui-subtle); }
+.heat-journey .active .journey-number { color:#fff; background:var(--ui-blue); }
+.panel-heading>span { flex:1; }
+.panel-heading .icon-button { flex-shrink:0; }
+.analysis-options { flex-shrink:0; background:#fff; border-bottom:1px solid var(--ui-border); font-size:11px; }
+.analysis-options>summary { padding:12px 18px; min-height:44px; cursor:pointer; color:var(--ui-muted); }
+.analysis-options>summary span { float:right; color:var(--ui-blue-ink); font-size:10px; }
+.climate-shell .analysis-options .board-tabs { border-bottom:0; padding:0 10px 8px; }
+.climate-shell .analysis-options .board-tabs button { min-height:40px; padding:8px 3px; font-size:11px; }
+.heat-facility-link { display:flex; width:100%; min-height:76px; padding:13px 12px; gap:10px; margin:12px 0 16px; border:1px solid var(--ui-blue-border); background:var(--ui-blue-soft); border-radius:10px; text-align:left; color:var(--ui-blue-ink); }
+.heat-facility-link:hover { background:#e3efff; border-color:var(--ui-blue); }
+.heat-facility-link>svg { flex-shrink:0; }
+.heat-facility-link>span { flex:1; min-width:0; }
+.heat-facility-link strong { display:block; font-size:13px; line-height:1.65; }
+.heat-facility-link small { display:block; font-size:11px; color:var(--ui-muted); line-height:1.65; margin-top:3px; }
+.weather-facility-link { margin:14px 0; }
+.climate-shell :is(.facility-panel,.current-weather-panel) .facility-heading { padding:18px 20px 14px; }
+.climate-shell :is(.facility-panel,.current-weather-panel) .facility-heading h1 { font-size:21px; line-height:1.4; margin:8px 0; }
+.climate-shell .facility-heading .facility-year-note { margin-top:10px; }
+.facility-weather-return { min-height:44px; margin-top:10px; gap:6px; font-size:11px; color:var(--ui-blue-ink); text-align:left; }
+.facility-weather-return:hover { text-decoration:underline; }
+.neighborhood-records { margin:14px 0 18px; border:1px solid var(--ui-border); border-radius:10px; background:#fff; }
+.neighborhood-records>summary { display:flex; align-items:center; gap:9px; min-height:65px; padding:12px; cursor:pointer; font-size:12px; font-weight:600; color:var(--ui-text); list-style:none; }
+.neighborhood-records>summary::-webkit-details-marker { display:none; }
+.neighborhood-records>summary>span { flex:1; }
+.neighborhood-records summary small { display:block; font-size:10px; font-weight:400; color:var(--ui-muted); margin-top:4px; }
+.neighborhood-records[open]>summary>svg:last-child { transform:rotate(180deg); }
+.neighborhood-records>p { padding:12px; font-size:11px; color:var(--ui-muted); line-height:1.8; }
+.neighborhood-records>div>button { display:flex; width:100%; min-height:86px; gap:9px; padding:13px 12px; text-align:left; border-top:1px solid var(--ui-border); color:var(--ui-muted); }
+.neighborhood-records>div>button:hover { background:var(--ui-surface); }
+.neighborhood-records>div>button>svg { flex-shrink:0; }
+.neighborhood-records>div>button>span { flex:1; min-width:0; }
+.neighborhood-records b { display:block; font-size:11px; color:var(--ui-muted); font-weight:500; }
+.neighborhood-records strong { display:block; font-size:12px; color:var(--ui-text); margin:3px 0; line-height:1.6; }
+.neighborhood-records button small { display:block; font-size:10px; line-height:1.65; color:var(--ui-muted); }
+.heat-period-summary .heat-period-range { margin:10px 0 0; color:var(--ui-muted); font-size:11px; font-variant-numeric:tabular-nums; }
+.heat-period-summary .heatwave-days { margin:10px 0 12px; }
+.heat-period-summary .heatwave-days small { display:block; font-size:10px; color:var(--ui-muted); margin-top:3px; }
+.heat-period-summary .heat-period-basis { font-size:11px; line-height:1.7; color:var(--ui-muted); margin:10px 0; }
+.heat-period-summary .temperature-extremes>div>small { color:var(--ui-muted); }
+/* The old narrow-screen board was absolute; the floating shell owns placement. */
+.climate-shell .data-board { position:static; inset:auto; box-shadow:none; }
+@media(max-width:760px) {
+ /* A definite height lets the nested flex panel scroll above the save bar. */
+ .climate-shell .floating-detail:has(.detail-workspace:not([hidden])) { height:min(50dvh,calc(100dvh - 344px)); max-height:none; }
+ .climate-shell .data-board:has(.heat-period-summary) .board-heading { display:none; }
+ .disaster-picker-trigger { min-height:62px; padding:8px 12px; }
+ .disaster-picker-trigger strong { font-size:15px; }
+ .climate-shell .heat-journey button { font-size:11px; }
+}

@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useRef} from 'react';
+import {useEffect,useRef,useState} from 'react';
 import { Activity, ArrowDownRight, ArrowRight, ArrowUpRight, Check, ChevronRight, CircleHelp, Database, MapPin, ShieldCheck, X } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, Legend } from 'recharts';
 import type { RiskRegion, Explanation, Mode } from '@/types';
@@ -7,24 +7,31 @@ import { color, fmt, INDICATORS } from './constants';
 import TemperatureChart from './TemperatureChart';
 import ReviewPanel from './ReviewPanel';
 import RegionalWeather from './RegionalWeather';
+import HeatPeriodSummary from './HeatPeriodSummary';
+import NeighborhoodRecords from './disasters/NeighborhoodRecords';
+import type {Disaster} from '@/types/disasters';
 
-type Props = {onWeather:(stationId?:string)=>void;onWeatherBack?:()=>void;mode:Mode; onFacilities:(code:string)=>void; cityDongs: boolean; region: RiskRegion | null; explanation: Explanation | null; tab: string; setTab: (tab: string) => void; loading: boolean; error: string | null; parent: string; sample: boolean; onDrill: (code: string) => void; onClose: () => void; onBusan: () => void};
+type Props = {onHazard:(hazard:Disaster)=>void;typhoonId:string;onWeather:(stationId?:string)=>void;onWeatherBack?:()=>void;mode:Mode; onFacilities:(code:string)=>void; cityDongs: boolean; region: RiskRegion | null; explanation: Explanation | null; tab: string; setTab: (tab: string) => void; loading: boolean; error: string | null; parent: string; sample: boolean; onDrill: (code: string) => void; onClose: () => void; onBusan: () => void};
 
-export default function DataBoard({region: r, explanation, tab, setTab, loading, error, parent, sample, onDrill, onClose, onBusan, cityDongs, mode, onFacilities, onWeather, onWeatherBack}: Props) {
+export default function DataBoard({region: r, explanation, tab, setTab, loading, error, parent, sample, onDrill, onClose, onBusan, cityDongs, mode, onFacilities, onWeather, onWeatherBack, onHazard, typhoonId}: Props) {
   const contentRef=useRef<HTMLDivElement>(null);
-  useEffect(()=>{contentRef.current?.scrollTo({top:0});},[tab,r?.region_code]);
+  const [historicalOpen,setHistoricalOpen]=useState(false);
+  useEffect(()=>{contentRef.current?.scrollTo({top:0});setHistoricalOpen(false);},[tab,r?.region_code]);
   const weather = r?.factors.find(f => f.key === 'heatwave_intensity')?.source_detail;
   const currentWeatherAvailable = !sample && r?.region_code.startsWith('21') && r.region_code.length === 8;
   return <aside className="data-board" aria-label="지역 데이터보드">
     <div className="board-heading"><span><Activity size={17}/> 선택한 동네 분석</span><button className="icon-button" onClick={onClose} aria-label="지역 목록으로 돌아가기"><X size={17}/></button></div>
     {onWeatherBack&&<button className="analysis-weather-back" onClick={onWeatherBack}>← 기상 비교 지도로 돌아가기</button>}
-    <div className="board-tabs" role="tablist" aria-label="분석 항목">{['위험현황', '현재기상', '원인분석', '대응방안', '보고서'].map(t => <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={tab === t ? 'active' : ''}>{t}</button>)}</div>
+    <details className="analysis-options"><summary>통계·대응 자세히 보기 <span>{tab}</span></summary><div className="board-tabs" role="tablist" aria-label="분석 항목">{['위험현황', '현재기상', '원인분석', '대응방안', '보고서'].map(t => <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={tab === t ? 'active' : ''}>{t}</button>)}</div></details>
     <div className="board-content" aria-busy={loading} ref={contentRef}>
       {!r ? <div className="board-welcome"><div className="welcome-icon"><MapPin size={30} strokeWidth={1.4}/></div><span className="eyebrow">우리 지역을 이해하는 첫걸음</span><h2>{cityDongs ? <>순위나 지도에서<br/>동을 선택해 주세요.</> : <>지도에서 지역을<br/>선택해 주세요.</>}</h2><p>동별 인구와 주거환경을 함께 살펴보고,<br/>우선 대응이 필요한 이유를 확인하세요.</p><div className="welcome-steps"><span><b>01</b> 지역의 통계를 살펴보고</span><span><b>02</b> 주요 취약요인을 비교하고</span><span><b>03</b> 대응방안을 검토하세요</span></div><button className="primary-button" onClick={onBusan}>부산 전체 읍면동 보기 <ArrowRight size={16}/></button></div> : <>
         <div className="selected-region"><div><span className="eyebrow">{r.full_name.replace(r.region_name, '').trim() || '선택 지역'}</span><h2>{r.region_name}<span className="region-dot"/></h2></div><MapPin size={24} strokeWidth={1.3}/></div>
         {r.region_code.length < 8 && <button className="drill-button" onClick={() => onDrill(r.region_code)}>{r.region_code.length === 2 ? '시군구별' : '읍면동별'} 자세히 보기 <ArrowRight size={15}/></button>}
         {sample && <div className="sample-inline">시연용 합성 데이터 · 실제 위험도 아님</div>}
-        {currentWeatherAvailable && (tab==='위험현황'||tab==='현재기상') && <RegionalWeather onMap={onWeather} key={r.region_code} code={r.region_code} detailed={tab==='현재기상'} onDetails={()=>setTab('현재기상')}/>}
+        {currentWeatherAvailable&&tab==='위험현황'&&<HeatPeriodSummary key={`period-${r.region_code}`} code={r.region_code} onDetails={()=>setTab('현재기상')} onMap={()=>onWeather()}/>}
+        {currentWeatherAvailable&&tab==='현재기상'&&<RegionalWeather onMap={onWeather} key={r.region_code} code={r.region_code} detailed onDetails={()=>setTab('현재기상')}/>}
+        {currentWeatherAvailable&&(tab==='위험현황'||tab==='현재기상')&&<button className="heat-facility-link" onClick={()=>onFacilities(r.region_code)}><MapPin size={19}/><span><strong>{r.region_name}의 쉼터·그늘막 확인</strong><small>기온을 살펴봤다면, 이용대상과 운영시간을 확인하세요.</small></span><ArrowRight size={17}/></button>}
+        {currentWeatherAvailable&&tab==='위험현황'&&<NeighborhoodRecords key={`records-${r.region_code}`} region={r.region_code} typhoonId={typhoonId} onSelect={onHazard}/>}
         {tab==='현재기상'&&!currentWeatherAvailable&&<p className="section-caption">실제 공공데이터 모드에서 부산 읍·면·동을 선택하면 인근 관측소의 최근 기상을 확인할 수 있습니다.</p>}
         {tab==='위험현황'&&!sample && weather?.station_id && <details className="station-details"><summary>분석에 사용한 기상 관측정보</summary><div className="station-note"><strong>{r.reference_year}년 분석 관측소 · {weather.station_name} ({weather.station_id})</strong><span>대표 위치에서 {fmt(weather.distance_km ?? null, 2)}km · {r.reference_year}년 6~8월</span><p>인근 관측소 기준이며 해당 지역의 직접 실측값은 아닙니다. 폭염일수는 일 최고기온 33℃ 이상인 날의 수입니다.</p><small>유효 관측: 평균기온 {weather.valid_mean_days}/{weather.expected_days}일 · 최고기온 {weather.valid_max_days}/{weather.expected_days}일</small></div></details>}
         {error && <div className="inline-error" role="alert">{error}</div>}
@@ -39,7 +46,7 @@ export default function DataBoard({region: r, explanation, tab, setTab, loading,
           </section>
           <div className="average-strip"><span>{r.comparison_region} 점수 평균</span><strong>{fmt(r.comparison_risk_average)}</strong><span className="difference">{r.risk_difference == null ? '비교 불가' : `${r.risk_difference >= 0 ? '+' : ''}${fmt(r.risk_difference)}점`}</span></div>
           <section className="board-section"><div className="section-title"><h3>분석 데이터 확보율</h3><b>{Math.round(r.data_completeness * 100)}<small>%</small></b></div><div className="progress-track"><i style={{width: `${r.data_completeness * 100}%`}}/></div><div className="availability-list">{r.factors.map(f => <div key={f.key}><span>{f.name}</span>{f.value == null ? <span className="unavailable" title={f.source_detail?.reason || '미확보'}>미확보</span> : <span className="available"><Check size={12}/> {fmt(f.value, f.unit === '명' ? 0 : 1)}{f.unit}</span>}</div>)}</div></section>
-          <details className="historical-weather"><summary>취약도 분석에 사용한 여름 기온</summary><TemperatureChart key={`${mode}-${r.region_code}`} code={r.region_code} mode={mode}/></details><div className="info-note"><ShieldCheck size={16}/><p>없는 값을 평균이나 0으로 채우지 않습니다. 이 점수는 재난 발생확률이 아닙니다.</p></div>
+          <details className="historical-weather" open={historicalOpen} onToggle={e=>setHistoricalOpen(e.currentTarget.open)}><summary>취약도 분석에 사용한 여름 기온</summary>{historicalOpen&&<TemperatureChart key={`${mode}-${r.region_code}`} code={r.region_code} mode={mode}/>}</details><div className="info-note"><ShieldCheck size={16}/><p>없는 값을 평균이나 0으로 채우지 않습니다. 이 점수는 재난 발생확률이 아닙니다.</p></div>
         </>}
         {tab === '원인분석' && <>
           <section className="board-section"><div className="section-title"><h3>주요 위험요인</h3><span className="muted">TOP 3</span></div><p className="section-caption">{r.risk_score == null ? '확보된 지표의 상대 기여도입니다. 종합 위험원인으로 단정하지 않습니다.' : '정규화 값 × 해당 지표의 가중치'}</p><div className="factor-cards">{r.top_factors.map((f, i) => <div className="factor-card" key={f.key}><span className="factor-index">0{i + 1}</span><div><h4>{f.name}</h4><p>{f.comparison_region} 기준 {fmt(f.comparison_average)}{f.unit}</p></div><strong>{fmt(f.value, f.unit === '명' ? 0 : 1)}<small>{f.unit}</small></strong></div>)}{!r.top_factors.length && <p className="section-caption">이 지역은 현재 실제 분석 범위에 포함되지 않습니다.</p>}</div></section>

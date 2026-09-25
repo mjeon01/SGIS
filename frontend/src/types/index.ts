@@ -40,7 +40,7 @@ export type PreparedReport = {status:'prepared'|'not_prepared'|'stale'|'sample'|
 export type ReviewSheet = {region:RiskRegion; rank:number|null; scored_count:number; total_count:number; rank_method:string; scope:string; explanation:Explanation; field_checks:{id:string; factor_name:string; text:string}[]; generated_at:string; facility_note:string; purpose:string; report:PreparedReport};
 
 export type WeatherSeries={period:string[];daily:DailyWeather['daily'];summary:DailyWeather['summary'];heatwave_days:number|null};
-export type WeatherStation={station_id:string;station_name:string;kind:string;location:{latitude:number;longitude:number;address:string}|null;source_url:string;recent:WeatherSeries;summer:WeatherSeries|null;latest:DailyWeather['daily'][number]|null};
+export type WeatherStation={station_id:string;station_name:string;kind:string;location:{latitude:number;longitude:number;address:string;start_date:string;end_date:string|null}|null;source_url:string;recent:WeatherSeries;summer:WeatherSeries|null;latest:DailyWeather['daily'][number]|null};
 export type CurrentWeather={meta:{reference_year:number;requested_through:string;latest_observation_date:string;collected_at:string;source:string;outdated:boolean};stations:WeatherStation[]};
 export type RegionalCurrentWeather={region_code:string;region_name:string;meta:CurrentWeather['meta'];available:boolean;reason?:string;station?:WeatherStation;distance_km?:number;is_local_measurement:false};
 export type WeatherComparison={meta:CurrentWeather['meta'];observed_on:string;observed_count:number;station_count:number;stations:(WeatherStation&{maximum:number|null;minimum:number|null;regions:{region_code:string;region_name:string;full_name:string;distance_km:number}[]})[]};

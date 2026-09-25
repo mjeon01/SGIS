@@ -1,19 +1,26 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import maplibregl, { GeoJSONSource, LngLatBounds } from 'maplibre-gl';
-import type { GeoData, Layer, MapProperties, Facility, FloodRecord } from '@/types';
+import type { GeoData, Layer, MapProperties, Facility } from '@/types';
 import type { Geometry } from 'geojson';
+import type {DisasterMapLayer,MapCamera} from '@/types/disasters';
+import FloodLayer from './map/FloodLayer';
+import WeatherLayer from './map/WeatherLayer';
+import LandslideLayer from './map/LandslideLayer';
+import TyphoonLayer from './map/TyphoonLayer';
+import ColdLayer from './map/ColdLayer';
+import {mapPadding} from './map/viewport';
 import { COLORS, fmt, INDICATORS, LAYERS } from './constants';
 
 type Props = {
-  data: GeoData; context: GeoData | null; parent: string; selected: string | null; layer: Layer;
+  dataReady:boolean; data: GeoData; context: GeoData | null; parent: string; selected: string | null; layer: Layer;
   overview: GeoData | null;
   summaryMode: boolean;
+  candidateCodes?:string[];
   onDisplayLevel: (level: 'sigungu' | 'dong' | 'sido') => void;
   onSelect: (code: string) => void; onDrill: (code: string) => void;
   zoom: {step: number; id: number}; reset: number;
-  streets: boolean;
-  flood?: {records:FloodRecord[];selected:FloodRecord|null;onSelect:(id:string)=>void;imageUrl:string|null;bbox:[number,number,number,number]};
+  mapLayer:DisasterMapLayer; onCameraChange?:(camera:MapCamera)=>void;
   facilityMode: boolean; facilityRegion: string; facilities: Facility[]; selectedFacility: Facility | null; onFacilitySelect: (id: string) => void;
 };
 
@@ -39,6 +46,12 @@ export default function ClimateMap(props: Props) {
   const [error, setError] = useState(false);
   const [rendered, setRendered] = useState(false);
   const [near, setNear] = useState(false);
+  const neutral = props.mapLayer.kind !== 'heat';
+  const flood = props.mapLayer.kind === 'flood' ? props.mapLayer : null;
+  const instanceId = useRef<string>('');
+  const lastFacilityFocus=useRef<string|null>(null);
+  const lastFacilityBounds=useRef('');
+  const popupRef=useRef<maplibregl.Popup|null>(null);
   const displayData = props.overview && !near ? props.overview : props.data;
   const displayLevel = props.overview && !near ? 'sigungu' : props.data.features[0]?.properties.region_code.length === 8 ? 'dong' : props.parent === '00' ? 'sido' : 'sigungu';
   useEffect(() => { propsRef.current = props; }, [props]);
@@ -54,7 +67,7 @@ export default function ClimateMap(props: Props) {
         const camera = current.cameraForBounds(bounds(feature.geometry), {padding:90, maxZoom:13});
         if (camera) current.easeTo({...camera, zoom:Math.max(DETAIL_ZOOM + .2, camera.zoom || 12), duration:500});
       }
-      if (p.facilityMode || p.summaryMode || p.flood) p.onSelect(code);
+      if (p.facilityMode || p.summaryMode || p.mapLayer.kind !== 'heat') p.onSelect(code);
       else if (p.parent.length === 5 && p.parent !== code) p.onDrill(code);
       return;
     }
@@ -74,21 +87,26 @@ export default function ClimateMap(props: Props) {
       });
     } catch { setError(true); return; }
     map.current = current;
+    instanceId.current=crypto.randomUUID();
+    const reportCamera=()=>{const center=current.getCenter();propsRef.current.onCameraChange?.({longitude:center.lng,latitude:center.lat,zoom:current.getZoom()});};
+    current.on('moveend',reportCamera);
     current.on('zoom', () => setNear(current.getZoom() >= DETAIL_ZOOM));
     current.doubleClickZoom.disable();
     const popup = new maplibregl.Popup({closeButton: false, closeOnClick: true, offset: 15, className: 'climate-tooltip'});
+    popupRef.current=popup;
     current.on('load', () => {
       current.addSource('streets', {type: 'raster', tiles: [process.env.NEXT_PUBLIC_MAP_TILE_URL || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize: 256, maxzoom: 19});
-      current.addLayer({id: 'streets', type: 'raster', source: 'streets', layout: {visibility: 'none'}});
+      current.addLayer({id: 'streets', type: 'raster', source: 'streets', paint:{'raster-saturation':-.15}});
       current.addSource('context', {type: 'geojson', data: {type: 'FeatureCollection', features: []}});
-      current.addLayer({id: 'land', type: 'fill', source: 'context', paint: {'fill-color': '#f6f7f1'}});
-      current.addLayer({id: 'land-outline', type: 'line', source: 'context', paint: {'line-color': '#cdd8d2', 'line-width': 0.8}});
       current.addSource('analysis', {type: 'geojson', data: {type: 'FeatureCollection', features: []}});
       current.addLayer({id: 'areas', type: 'fill', source: 'analysis', paint: {
         'fill-color': ['case', ['==', ['get', 'value'], null], '#d3dfda', ['step', ['get', 'value'], COLORS[0], 20, COLORS[1], 40, COLORS[2], 60, COLORS[3], 80, COLORS[4]]],
-        'fill-opacity': 0.78,
+        'fill-opacity': 0.54,
       }});
       current.addLayer({id: 'area-lines', type: 'line', source: 'analysis', paint: {'line-color': '#ffffff', 'line-width': 1.4}});
+      current.addSource('readiness', {type:'geojson',data:{type:'FeatureCollection',features:[]}});
+      current.addLayer({id:'readiness-hit',type:'fill',source:'readiness',paint:{'fill-opacity':0}});
+      current.addLayer({id:'readiness-outline',type:'line',source:'readiness',paint:{'line-color':'#15594f','line-width':['interpolate',['linear'],['zoom'],9,1,14,2.5]}});
       current.addLayer({id: 'selected', type: 'line', source: 'analysis', filter: ['==', ['get', 'region_code'], ''], paint: {'line-color': '#164f45', 'line-width': 3}});
       current.addSource('flood-history', {type:'geojson',data:{type:'FeatureCollection',features:[]}});
       current.addLayer({id:'flood-history',type:'circle',source:'flood-history',paint:{'circle-color':'#227db6','circle-radius':['interpolate',['linear'],['zoom'],9,4,15,8],'circle-stroke-color':'#fff','circle-stroke-width':1.5}});
@@ -108,7 +126,7 @@ export default function ClimateMap(props: Props) {
       if (!p) return;
       const div = document.createElement('div');
       const name = document.createElement('strong'); name.textContent = p.region_name;
-      if (propsRef.current.facilityMode || propsRef.current.flood) {
+      if (propsRef.current.mapLayer.kind !== 'heat') {
         div.append(name);
         popup.setLngLat(event.lngLat).setDOMContent(div).addTo(current);
         return;
@@ -121,18 +139,21 @@ export default function ClimateMap(props: Props) {
     });
     current.on('mouseleave', 'areas', () => { current.getCanvas().style.cursor = ''; popup.remove(); });
     current.on('click', 'areas', event => {
-      if (propsRef.current.flood && current.queryRenderedFeatures(event.point, {layers:['flood-history']}).length) return;
+      if(current.queryRenderedFeatures(event.point,{layers:['readiness-hit']}).length)return;
+      if (['landslide-points','typhoon-positions'].some(id=>current.getLayer(id)&&current.queryRenderedFeatures(event.point,{layers:[id]}).length)) return;
+      if (propsRef.current.mapLayer.kind === 'flood' && current.queryRenderedFeatures(event.point, {layers:['flood-history']}).length) return;
       if (propsRef.current.facilityMode && current.queryRenderedFeatures(event.point, {layers:['facility-points']}).length) return;
       const code = event.features?.[0]?.properties?.region_code;
       if (code) { popup.remove(); selectOnMap(code); }
     });
+    current.on('click','readiness-hit',event=>{const code=event.features?.[0]?.properties?.region_code;if(code){popup.remove();selectOnMap(code);}});
     current.on('click', 'facility-points', event => {
       const id = event.features?.[0]?.properties?.id;
       if (id) {popup.remove();propsRef.current.onFacilitySelect(id);}
     });
     current.on('mouseenter', 'facility-points', () => {current.getCanvas().style.cursor='pointer';});
     current.on('mouseleave', 'facility-points', () => {current.getCanvas().style.cursor='';});
-    current.on('click','flood-history',event=>{const id=event.features?.[0]?.properties?.id;if(id){popup.remove();propsRef.current.flood?.onSelect(id);}});
+    current.on('click','flood-history',event=>{const id=event.features?.[0]?.properties?.id;if(id){popup.remove();const layer=propsRef.current.mapLayer;if(layer.kind==='flood')layer.onSelect(id);}});
     current.on('mouseenter','flood-history',()=>{current.getCanvas().style.cursor='pointer';});
     current.on('mouseleave','flood-history',()=>{current.getCanvas().style.cursor='';});
     current.on('dblclick', 'areas', event => {
@@ -147,6 +168,12 @@ export default function ClimateMap(props: Props) {
     observer.observe(container.current);
     return () => { observer.disconnect(); labels.current.forEach(m => m.remove()); popup.remove(); current.remove(); map.current = null; };
   }, []);
+
+  useEffect(()=>{
+    if(!ready||!map.current)return;
+    const codes=new Set(props.candidateCodes||[]);
+    (map.current.getSource('readiness') as GeoJSONSource).setData({type:'FeatureCollection',features:neutral?[]:props.data.features.filter(f=>codes.has(f.properties.region_code))});
+  },[ready,props.candidateCodes,props.data,neutral]);
 
   useEffect(() => {
     if (!ready || !map.current) return;
@@ -170,7 +197,7 @@ export default function ClimateMap(props: Props) {
     });
     const arrange = () => {
       const placed: {x: number; y: number; w: number}[] = [];
-      const dense = displayData.features.length > 50;
+      const dense = displayData.features.length > 50 || map.current!.getZoom() < 8;
       const ordered = [...labels.current].sort((a, b) => Number(b.getElement().dataset.code === propsRef.current.selected) - Number(a.getElement().dataset.code === propsRef.current.selected));
       ordered.forEach(marker => {
         const element = marker.getElement();
@@ -188,33 +215,10 @@ export default function ClimateMap(props: Props) {
 
   useEffect(() => {
     if (!ready || !map.current) return;
-    map.current.setLayoutProperty('streets', 'visibility', props.streets ? 'visible' : 'none');
-    map.current.setLayoutProperty('land', 'visibility', props.streets ? 'none' : 'visible');
-    map.current.setLayoutProperty('land-outline', 'visibility', props.streets ? 'none' : 'visible');
-    map.current.setPaintProperty('areas', 'fill-opacity', props.facilityMode || props.flood ? 0 : props.streets ? 0.22 : 0.78);
-    map.current.setPaintProperty('area-lines', 'line-color', props.facilityMode || props.flood ? '#85998b' : '#ffffff');
-  }, [ready, props.streets, props.facilityMode, props.flood]);
-
-  useEffect(()=>{
-    const current=map.current;
-    if(!ready||!current)return;
-    const flood=props.flood;
-    (current.getSource('flood-history') as GeoJSONSource).setData({type:'FeatureCollection',features:(flood?.records||[]).map(r=>({type:'Feature',geometry:{type:'Point',coordinates:[r.longitude,r.latitude]},properties:{id:r.id}}))});
-    current.setFilter('flood-selected',['==',['get','id'],flood?.selected?.id||'']);
-    if(current.getLayer('flood-forecast'))current.removeLayer('flood-forecast');
-    if(current.getSource('flood-forecast'))current.removeSource('flood-forecast');
-    if(flood?.imageUrl){
-      const [west,south,east,north]=flood.bbox;
-      current.addSource('flood-forecast',{type:'image',url:flood.imageUrl,coordinates:[[west,north],[east,north],[east,south],[west,south]]});
-      // Keep the image source's default linear filter. In MapLibre 5.24,
-      // switching this power-of-two image to nearest selects absent mipmaps.
-      current.addLayer({id:'flood-forecast',type:'raster',source:'flood-forecast',paint:{'raster-opacity':.72,'raster-fade-duration':0}},'area-lines');
-    }
-  },[ready,props.flood?.records,props.flood?.imageUrl,props.flood?.bbox,props.flood?.selected]);
-
-  useEffect(()=>{
-    if(ready&&props.flood?.selected)map.current?.flyTo({center:[props.flood.selected.longitude,props.flood.selected.latitude],zoom:15,duration:500});
-  },[ready,props.flood?.selected]);
+    popupRef.current?.remove();
+    map.current.setPaintProperty('areas', 'fill-opacity', neutral ? 0 : 0.54);
+    map.current.setPaintProperty('area-lines', 'line-color', neutral ? '#85998b' : '#ffffff');
+  }, [ready, neutral]);
 
   useEffect(() => {
     if (!ready || !map.current) return;
@@ -226,13 +230,18 @@ export default function ClimateMap(props: Props) {
   useEffect(() => {
     if (!ready || !map.current) return;
     map.current.setFilter('facility-selected', ['==', ['get','id'], props.selectedFacility?.id || '']);
-    if (props.facilityMode && props.selectedFacility) map.current.flyTo({center:[props.selectedFacility.longitude,props.selectedFacility.latitude],zoom:16,duration:600});
+    if(!props.facilityMode)return;
+    if(!props.selectedFacility){lastFacilityFocus.current=null;return;}
+    if(lastFacilityFocus.current!==props.selectedFacility.id){lastFacilityFocus.current=props.selectedFacility.id;map.current.flyTo({center:[props.selectedFacility.longitude,props.selectedFacility.latitude],zoom:16,duration:600});}
   }, [ready, props.selectedFacility, props.facilityMode]);
 
   useEffect(() => {
     if (!ready || !map.current || !props.facilityMode) return;
+    const key=`${props.facilityRegion}:${props.reset}`;
+    if(lastFacilityBounds.current===key)return;
     const features = props.data.features.filter(f => f.properties.region_code.startsWith(props.facilityRegion));
     if (!features.length) return;
+    lastFacilityBounds.current=key;
     const area = new LngLatBounds();
     features.forEach(f => area.extend(bounds(f.geometry)));
     const camera = map.current.cameraForBounds(area, {padding:80,maxZoom:14});
@@ -240,16 +249,18 @@ export default function ClimateMap(props: Props) {
   }, [ready, props.facilityRegion, props.facilityMode, props.data, props.reset]);
 
   useEffect(() => {
-    if (!ready || !map.current || !props.data.features.length || props.facilityMode) return;
+    if (!ready || !map.current || !props.dataReady || !props.data.features.length || props.facilityMode) return;
+    map.current.setMinZoom(4.7);
+    map.current.setMaxBounds([[120,29],[136,44]]);
     if (props.parent === '00') map.current.fitBounds([[124.9, 32.9], [130, 38.7]], {padding: 45, duration: 0});
     else {
       const all = new LngLatBounds();
       props.data.features.forEach(f => all.extend(bounds(f.geometry)));
-      map.current.fitBounds(all, {padding: {top: 80, bottom: 120, left: 50, right: 65}, duration: 0, maxZoom: 13});
+      map.current.fitBounds(all, {padding:mapPadding(map.current),duration: 0, maxZoom: 13});
     }
     // Layer changes preserve the user's view.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, props.parent, props.reset]);
+  }, [ready, props.parent, props.reset, props.dataReady]);
 
   useEffect(() => {
     if (!ready || !map.current) return;
@@ -257,16 +268,23 @@ export default function ClimateMap(props: Props) {
     labels.current.forEach(marker => {
       marker.getElement().classList.toggle('is-selected', marker.getElement().dataset.code === props.selected);
     });
+    if(!props.dataReady)return;
     const feature = props.data.features.find(f => f.properties.region_code === props.selected) || props.overview?.features.find(f => f.properties.region_code === props.selected);
     if (feature && props.selected) {
-      const camera = map.current.cameraForBounds(bounds(feature.geometry), {padding:100, maxZoom:props.selected.length === 8 ? 13 : 11});
-      if (camera) map.current.easeTo({...camera, zoom:props.selected.length === 8 || props.summaryMode || props.flood ? Math.max(DETAIL_ZOOM + .2, camera.zoom || 12) : camera.zoom, duration:600});
+      const camera = map.current.cameraForBounds(bounds(feature.geometry), {padding:mapPadding(map.current), maxZoom:props.selected.length === 8 ? 13 : 11});
+      if (camera) map.current.easeTo({...camera, zoom:props.selected.length === 8 || props.summaryMode || props.mapLayer.kind === 'flood' ? Math.max(DETAIL_ZOOM + .2, camera.zoom || 12) : camera.zoom, duration:600});
     }
     // Keep zoom stable when only the displayed layer changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, props.selected, props.parent, props.reset]);
+  }, [ready, props.selected, props.parent, props.reset, props.dataReady]);
 
   useEffect(() => { if (ready && props.zoom.id) map.current?.zoomTo((map.current?.getZoom() || 6) + props.zoom.step, {duration: 250}); }, [ready, props.zoom]);
 
-  return <div className="map-canvas" data-ready={rendered} data-display-level={displayLevel} data-feature-count={displayData.features.length} data-flood-layer={props.flood?(props.flood.imageUrl?'forecast':'history'):undefined} ref={container} aria-label={props.flood?'부산 침수 이력과 예상도 지도':'행정구역별 폭염 취약도 지도'}>{error && <div className="map-error">지도 표시를 위해 브라우저의 WebGL 지원이 필요합니다. 왼쪽 지역 목록에서도 상세 통계를 확인할 수 있습니다.</div>}</div>;
+  return <><div className={`map-canvas ${props.mapLayer.kind==='weather'?'weather-map':''}`} data-ready={rendered} data-map-instance={instanceId.current} data-layer={props.mapLayer.kind} data-display-level={displayLevel} data-feature-count={displayData.features.length} data-flood-layer={flood?.tab} ref={container} aria-label="우리 동네 기후재해 지도">{error && <div className="map-error">지도 표시를 위해 브라우저의 WebGL 지원이 필요합니다. 지역 목록에서도 상세 통계를 확인할 수 있습니다.</div>}</div>
+    <FloodLayer map={ready?map.current:null} layer={flood}/>
+    <WeatherLayer map={ready?map.current:null} layer={props.mapLayer.kind==='weather'?props.mapLayer:null}/>
+    <LandslideLayer map={ready?map.current:null} layer={props.mapLayer.kind==='landslide'?props.mapLayer:null}/>
+    <TyphoonLayer map={ready?map.current:null} layer={props.mapLayer.kind==='typhoon'?props.mapLayer:null}/>
+    <ColdLayer map={ready?map.current:null} layer={props.mapLayer.kind==='cold'?props.mapLayer:null}/>
+  </>;
 }

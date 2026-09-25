@@ -1,0 +1,92 @@
+/* Reading and controls share one left edge; the remaining map stays clear. */
+.app-shell.climate-shell{--panel-width:370px;--panel-space:402px}
+.climate-shell.board-hidden{--panel-space:0px}
+.hazard-dock{width:var(--panel-width);max-width:none}
+.climate-shell .floating-detail{left:16px;right:auto;top:222px;bottom:38px;background:#fff}
+.climate-shell .panel-heading{padding:7px 16px;min-height:45px;background:#f8faf7}
+.climate-shell .tool-rail{width:100%;justify-content:space-between}
+.climate-shell .tool-rail button{min-height:44px;font-size:11px}
+.climate-shell .map-tools{right:16px;top:88px}
+.climate-shell .zoom-tools{right:16px;bottom:66px}
+.climate-shell .floating-layer-menu{right:64px;top:129px}
+.climate-shell .map-topbar{left:calc(var(--panel-space) + 16px);top:96px}
+.climate-shell .map-title-card,.climate-shell[data-hazard=flood] .map-title-card,.climate-shell:has(.weather-map) .map-title-card{left:calc(var(--panel-space) + 16px);top:142px}
+.climate-shell.board-hidden .map-topbar{top:224px}
+.climate-shell.board-hidden .map-title-card{top:266px}
+.climate-shell:not(.board-hidden) .map-title-card{display:none}
+.climate-shell .basemap-toggle{right:70px;bottom:30px}
+.climate-shell .map-boundary-badge{left:calc(var(--panel-space) + 16px);bottom:30px}
+.climate-shell .map-legend,.climate-shell .flood-map-legend,.climate-shell .facility-map-legend,.climate-shell .weather-map-notice{left:auto;right:16px;bottom:170px;max-width:210px;background:#fff}
+.climate-shell .map-data-notice{left:calc(var(--panel-space) + 16px);right:auto;max-width:calc(100% - var(--panel-space) - 260px);bottom:150px}
+.climate-shell .updating-pill{left:calc(var(--panel-space) + 16px);top:156px}
+.climate-shell .busan-shortcut{right:76px}
+.climate-shell .sample-map-banner{left:calc(var(--panel-space) + 16px);top:220px}
+.climate-shell .timeline-dock{left:calc(var(--panel-space) + (100% - var(--panel-space))/2);width:min(600px,calc(100% - var(--panel-space) - 120px));bottom:44px;background:#fff}
+.climate-shell .map-timeline{padding:13px 16px}
+.climate-shell .timeline-heading{font-size:12px}.climate-shell .timeline-heading time{font-size:12px;color:#475e55}
+.climate-shell .timeline-controls{gap:6px;margin-top:10px}.climate-shell .timeline-controls button{height:40px;width:36px}.climate-shell .timeline-controls .timeline-play{width:88px;gap:7px;font-size:12px}
+.climate-shell .timeline-controls .timeline-play:hover:enabled{background:#244e40;color:white}
+.climate-shell .timeline-range{font-size:10px;margin-top:5px}
+.climate-shell .disaster-empty{left:calc(var(--panel-space) + (100% - var(--panel-space))/2)}
+.climate-shell[data-hazard=landslide] .disaster-legend{bottom:55px}
+.disaster-panel{padding:20px;line-height:1.7;font-size:13px}
+.disaster-panel h2{font-size:21px;line-height:1.45;letter-spacing:-.8px;margin:7px 0 17px;text-wrap:balance}
+.disaster-panel .eyebrow{font-size:10px;letter-spacing:.5px;color:#64766c}
+.local-answer{border:1px solid #dce3ea;background:#f3f6fa;border-radius:12px;padding:17px 18px;margin:0 0 15px}
+.local-answer>span{font-size:12px;color:#4e6177;display:block}.local-answer h3{font-size:13px;color:#4e6177;margin:6px 0 2px;font-weight:500}
+.local-answer>strong{display:block;font-size:42px;font-weight:700;letter-spacing:-1.5px;line-height:1.15;color:#395682;font-variant-numeric:tabular-nums}
+.local-answer>strong small{font-size:18px;margin-left:7px;font-weight:500;letter-spacing:0}
+.local-answer p{font-size:12px;margin:7px 0 0;line-height:1.7;color:#435b70}
+.local-answer .answer-explanation{font-size:11px;color:#647588;margin-top:8px}
+.landslide-answer{background:#f8f5ed;border-color:#e9e1d2}.landslide-answer>strong{color:#84613a}.landslide-answer>span,.landslide-answer p{color:#716145}.landslide-answer>strong{margin-top:5px}
+.cold-answer{background:#f0f6f8}.cold-answer>strong{color:#397388}
+.disaster-primary{width:100%;justify-content:space-between;gap:10px;padding:13px 14px;border-radius:9px;background:var(--green);color:white;min-height:66px;text-align:left}
+.disaster-primary>span{flex:1;font-size:14px;font-weight:600}.disaster-primary small{display:block;font-size:10px;font-weight:400;line-height:1.6;opacity:.9;margin-top:2px}
+.disaster-primary:hover:enabled{background:#244e40}.disaster-primary:disabled{opacity:.5}
+.action-caption{font-size:11px;color:#627269;line-height:1.7;margin:8px 1px 16px}
+.compact-fields{margin:14px 0;grid-template-columns:90px 1fr}
+.track-milestones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:16px 0}
+.track-milestones button{display:flex;flex-direction:column;padding:9px 2px;min-height:80px;border:1px solid #dee5e0;border-radius:8px;font-size:11px;background:#fff}
+.track-milestones button[aria-pressed=true]{border-color:#5b7b9f;background:#edf3f9;color:#355783}
+.track-milestones strong{font-size:16px;letter-spacing:-.5px;margin:3px 0}.track-milestones strong small{font-size:10px;font-weight:400}.track-milestones time{font-size:9px;color:#627269}
+.secondary-actions{gap:6px}.secondary-actions button{gap:5px;min-height:40px;font-size:11px;flex:1 1 auto}
+.disaster-note{font-size:11px;color:#607065;line-height:1.8}
+.record-details{padding:13px 0;margin:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:12px}.record-details summary{cursor:pointer;font-weight:600;min-height:25px;color:#435b4d}.record-details p{font-size:11px;line-height:1.8;margin-top:10px;color:#627269}
+.landslide-list-heading{display:flex;align-items:center;justify-content:space-between;margin:15px 0 3px}.landslide-list-heading span{font-size:10px;color:#697b6e}
+.landslide-list{margin-top:0;max-height:290px}.landslide-list button{justify-content:flex-start;font-size:12px;line-height:1.6;padding:12px 7px}.landslide-list button>span{flex:1}.landslide-list button .point-number{align-self:flex-start;margin-top:3px;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#eee6d9;color:#826038;font-size:10px;flex-shrink:0}
+.landslide-detail{padding:15px;border:1px solid #e6dfd0;margin:16px 0}.landslide-detail h3{display:flex;gap:6px;align-items:baseline;line-height:1.6;font-size:14px}.landslide-detail .designation-memo{padding:10px;background:#fff;border-radius:7px;font-size:11px;line-height:1.8}.designation-memo strong{font-size:10px;color:#687268}
+.neighborhood-glance{padding:12px 0 0;border-top:1px solid #deddd3;margin-top:14px}.neighborhood-glance h3{font-size:13px;display:block}.neighborhood-glance>div{display:flex;gap:15px;flex-wrap:wrap;font-size:11px}.neighborhood-glance strong{display:block;font-size:18px;color:#355c4c}.neighborhood-glance p{font-size:10px;line-height:1.7;margin-top:8px;color:#627269}.neighborhood-context .neighborhood-profile{margin-bottom:0;padding-bottom:0;border-bottom:0}
+.floating-detail>section:has(>.neighborhood-profile){flex-shrink:0;max-height:40%;overflow:auto;padding:0 16px}
+.map-story-card{position:absolute;top:96px;right:76px;width:320px;z-index:6;border:1px solid #d4dee8;border-radius:12px;background:#fffffff5;box-shadow:0 4px 20px #263e5312;padding:16px 18px;pointer-events:auto}
+.map-story-card>div{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:10px;color:#647286}.story-phase{background:#e8eff8;color:#476081;border-radius:4px;padding:3px 6px}
+.map-story-card h2{font-size:13px;font-weight:500;margin:12px 0 8px}.map-story-card h2 strong{font-size:25px;letter-spacing:-.8px;font-weight:700;margin-left:5px;color:#355784}.map-story-card small{font-size:12px;font-weight:500}.map-story-card p{font-size:10px;color:#647286}.map-story-card button{display:flex;gap:6px;font-size:11px;color:#3b638c;margin-top:10px;min-height:32px}
+.map-context-hint{position:absolute;top:96px;left:calc(var(--panel-space) + 20px);display:flex;align-items:center;gap:7px;max-width:calc(100% - var(--panel-space) - 95px);background:#fffffff0;border:1px solid var(--border);border-radius:8px;padding:9px 12px;z-index:4;font-size:11px;color:#596d60}.map-context-hint i{height:8px;width:8px;background:#956b42;border-radius:50%}
+.typhoon-position{width:34px;height:34px;z-index:5;pointer-events:none}.typhoon-eye{display:block;width:34px;height:34px;border:8px solid #426291;background:white;border-radius:50%;box-shadow:0 0 0 5px #ffffffb0,0 2px 12px #203f6455}
+.typhoon-position-label{position:absolute;left:45px;top:-10px;white-space:nowrap;background:#fff;border:1px solid #d4dfeb;border-radius:8px;padding:8px 11px;box-shadow:0 4px 14px #23445b1c;color:#365c87}.typhoon-position-label strong,.typhoon-position-label small,.typhoon-position-label b{display:block}.typhoon-position-label strong{font-size:12px}.typhoon-position-label small{font-size:10px;font-weight:400;margin:2px 0}.typhoon-position-label b{font-size:13px}
+.typhoon-neighborhood{width:14px;height:14px;z-index:4;pointer-events:none}.typhoon-neighborhood i{display:block;background:#be752d;width:14px;height:14px;border:3px solid white;border-radius:50%;box-shadow:0 0 0 2px #be752d}.typhoon-neighborhood span{position:absolute;top:22px;right:-7px;background:#fff8ec;border:1px solid #dfc9a9;color:#885522;font-size:11px;font-weight:600;white-space:nowrap;border-radius:5px;padding:5px 8px}
+.landslide-map-label{background:#7f5e36;color:#fff;font-size:12px;padding:6px 10px;border-radius:7px;box-shadow:0 2px 9px #59411e30;pointer-events:none}
+.typhoon-position.label-left .typhoon-position-label{left:auto;right:45px}
+@media(max-width:1100px) and (min-width:761px){
+ .app-shell.climate-shell{--panel-width:330px;--panel-space:362px}.climate-shell.board-hidden{--panel-space:0px}
+ .map-story-card{width:285px;padding:12px 14px}.climate-shell .timeline-dock{width:calc(100% - var(--panel-space) - 105px)}
+}
+@media(max-width:760px){
+ .app-shell.climate-shell{--panel-space:0px}
+ .hazard-dock{width:calc(100% - 20px)}.climate-shell .tool-rail{display:flex}
+ .climate-shell .floating-detail{top:auto;left:10px;right:10px;bottom:150px;width:auto;max-height:43dvh}
+ .climate-shell .panel-heading{min-height:42px;padding:4px 12px;font-size:11px}
+ .climate-shell .map-tools{top:198px;right:10px}.climate-shell .zoom-tools{right:10px;bottom:181px}
+ .climate-shell .map-topbar,.climate-shell.board-hidden .map-topbar{left:10px;top:195px}
+ .climate-shell .map-boundary-badge{left:10px;bottom:133px}.climate-shell .basemap-toggle{right:10px;bottom:133px}
+ .climate-shell .timeline-dock{left:50%;width:calc(100% - 20px);bottom:28px}.climate-shell .map-timeline{padding:9px 11px}.climate-shell .timeline-heading,.climate-shell .timeline-heading time{font-size:10px}.climate-shell .timeline-controls{margin-top:5px;gap:3px}.climate-shell .timeline-controls button{height:36px;width:30px}.climate-shell .timeline-controls .timeline-play{width:79px;font-size:11px}.climate-shell .timeline-range{font-size:9px}
+ .climate-shell .map-legend,.climate-shell .flood-map-legend,.climate-shell .facility-map-legend,.climate-shell .weather-map-notice{left:10px;right:auto;bottom:163px;max-width:190px}
+ .climate-shell[data-hazard=landslide] .floating-detail{bottom:72px;max-height:45dvh}.climate-shell[data-hazard=landslide] .basemap-toggle,.climate-shell[data-hazard=landslide] .map-boundary-badge{bottom:34px}.climate-shell[data-hazard=landslide] .disaster-legend{bottom:74px}
+ .climate-shell .disaster-empty{left:50%}
+ .disaster-panel{padding:14px}.disaster-panel h2{font-size:19px;margin:5px 0 12px}
+ .local-answer{padding:12px 14px;margin-bottom:12px}.local-answer>strong{font-size:34px}.local-answer h3{margin-top:3px}.local-answer p{margin-top:5px;font-size:11px}.local-answer .answer-explanation{font-size:10px;margin-top:5px}
+ .disaster-primary{padding:11px 12px;min-height:62px}.disaster-primary>span{font-size:13px}.disaster-primary small{font-size:9px}.action-caption{font-size:10px;margin-bottom:12px}
+ .map-story-card{top:207px;left:10px;right:auto;width:calc(100% - 68px);padding:10px 12px}.map-story-card>div{font-size:9px}.map-story-card h2{margin:5px 0 0;font-size:12px}.map-story-card h2 strong{font-size:21px}.map-story-card p{display:none}.map-story-card button{margin-top:3px;min-height:29px;font-size:10px}
+ .climate-shell:not(.board-hidden) .map-story-card{display:none}
+ .map-context-hint{left:10px;top:205px;max-width:calc(100% - 66px);font-size:10px;padding:7px 10px}
+ .typhoon-position-label{left:40px;padding:6px 8px}.typhoon-position-label b{font-size:11px}
+}

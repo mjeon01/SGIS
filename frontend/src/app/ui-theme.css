@@ -1,0 +1,194 @@
+/* Interface palette only. Map paint, tiles, labels and data legends keep their colors. */
+.climate-shell {
+  --ui-blue: #2563eb;
+  --ui-blue-hover: #1d4ed8;
+  --ui-blue-ink: #1e40af;
+  --ui-blue-soft: #eff6ff;
+  --ui-blue-border: #b9d2fa;
+  --ui-text: #1e293b;
+  --ui-muted: #596779;
+  --ui-subtle: #64748b;
+  --ui-border: #e2e8f0;
+  --ui-surface: #f8fafc;
+  --ui-success: #2e7151;
+}
+
+/* Existing components read these aliases locally; the map keeps its v1 tokens. */
+.climate-shell :is(.app-header, .hazard-dock, .floating-detail, .timeline-dock, .sources-modal) {
+  --green: var(--ui-blue);
+  --green-dark: var(--ui-blue-hover);
+  --ink: var(--ui-text);
+  --muted: var(--ui-muted);
+  --border: var(--ui-border);
+  --soft: var(--ui-surface);
+  color: var(--ui-text);
+}
+.climate-shell :is(.app-header, .floating-detail, .sources-modal) {
+  border-color: var(--ui-border);
+  background: #fff;
+  box-shadow: 0 6px 28px #0f172a12;
+}
+.climate-shell :is(.app-header, .hazard-dock, .floating-detail, .sources-modal) :is(button, a, select, input, textarea, summary):focus-visible {
+  outline-color: var(--ui-blue);
+}
+.climate-shell :is(.floating-detail, .sources-modal) .primary-button:hover:enabled,
+.climate-shell .disaster-primary:hover:enabled { background: var(--ui-blue-hover); color: #fff; }
+.climate-shell :is(.app-header, .floating-detail, .sources-modal) .icon-button { color: var(--ui-subtle); }
+.climate-shell :is(.app-header, .floating-detail, .sources-modal) .icon-button:hover { background: #f1f5f9; color: var(--ui-text); }
+.climate-shell :is(.floating-detail, .sources-modal) .eyebrow { color: var(--ui-subtle); }
+
+/* White navigation, blue brand and one selected disaster. */
+.climate-shell .brand strong { color: var(--ui-text); }
+.climate-shell .brand small { color: var(--ui-subtle); }
+.climate-shell .app-header .region-search { background: var(--ui-surface); border-color: var(--ui-border); color: var(--ui-subtle); }
+.climate-shell .region-search:focus-within { border-color: var(--ui-blue); box-shadow: 0 0 0 3px #2563eb12; }
+.climate-shell .region-search-results { box-shadow: 0 10px 28px #0f172a18; }
+.climate-shell .region-search-results button:is(:hover, [aria-selected=true]) { background: var(--ui-blue-soft); }
+.climate-shell :is(.header-finder, .header-inspection) { color: #475569; border-color: var(--ui-border); }
+.climate-shell :is(.header-finder, .header-inspection):hover { background: var(--ui-surface); }
+.climate-shell :is(.header-finder, .header-inspection)[aria-pressed=true] { background: var(--ui-blue-soft); border-color: var(--ui-blue-border); color: var(--ui-blue-ink); }
+.climate-shell .header-inspection b { background: #edf1f6; color: #475569; }
+.climate-shell .header-inspection[aria-pressed=true] b { background: #dbeafe; color: var(--ui-blue-ink); }
+.climate-shell .mode-selector:not(.sample) { background: var(--ui-surface); border-color: var(--ui-border); }
+.climate-shell .mode-selector:not(.sample) .status-dot { background: var(--ui-success); }
+.climate-shell .disaster-switch { background: #fff; border-color: var(--ui-border); }
+.climate-shell .disaster-switch button { color: #596779; }
+.climate-shell .disaster-switch button[aria-pressed=true] { background: var(--ui-blue); color: #fff; }
+.climate-shell .disaster-switch button:hover:not([aria-pressed=true]) { background: #f1f5f9; }
+.climate-shell .tool-rail { background: #fff; border-color: var(--ui-border); }
+.climate-shell .tool-rail button { color: var(--ui-muted); }
+.climate-shell .tool-rail button:hover:not(.active) { background: var(--ui-surface); }
+.climate-shell .tool-rail button.active { background: var(--ui-blue-soft); color: var(--ui-blue-ink); }
+.climate-shell .panel-heading { background: var(--ui-surface); color: #475569; border-color: var(--ui-border); }
+.climate-shell .region-navigator-trigger { color: #475569; }
+.climate-shell .region-navigator-trigger:hover { background: #f1f5f9; }
+.climate-shell .region-navigator-popover { color: var(--ui-text); border-color: var(--ui-border); box-shadow: 0 12px 40px #0f172a20; }
+.climate-shell :is(.region-navigator-heading span, .region-navigator-fields label) { color: var(--ui-muted); }
+.climate-shell .region-navigator-fields select { background: var(--ui-surface); color: var(--ui-text); border-color: #cbd5e1; }
+.climate-shell .region-coverage-note { background: var(--ui-surface); }
+.climate-shell .region-coverage-note small { color: var(--ui-muted); }
+.climate-shell .region-coverage-note i { background: var(--ui-success); }
+.climate-shell .region-navigator-actions button { border-color: var(--ui-border); }
+.climate-shell .region-navigator-actions button:last-child { border-color: var(--ui-blue); }
+
+/* Neutral reading surfaces; blue marks selected conditions and primary actions. */
+.climate-shell :is(.readiness-intro h1, .readiness-result-title strong, .inspection-cards h2) { color: var(--ui-text); }
+.climate-shell :is(.readiness-intro p, .inspection-intro p, .readiness-region-fields label, .readiness-hint, .readiness-rule, .readiness-method, .readiness-submit p) { color: var(--ui-muted); }
+.climate-shell :is(.readiness-submit, .readiness-steps) { border-color: var(--ui-border); }
+.climate-shell .readiness-submit { box-shadow: 0 -4px 12px #0f172a05; }
+.climate-shell .readiness-steps li { color: var(--ui-subtle); }
+.climate-shell .readiness-steps b { background: #edf1f6; color: var(--ui-subtle); }
+.climate-shell .readiness-steps .active { color: var(--ui-blue-ink); }
+.climate-shell .readiness-steps .active b { background: var(--ui-blue); color: #fff; }
+.climate-shell .readiness-region-fields select { color: var(--ui-text); border-color: #cbd5e1; }
+.climate-shell .readiness-criteria button { border-color: #d4dde7; background: #fff; }
+.climate-shell .readiness-criteria button:hover { border-color: #94a3b8; background: var(--ui-surface); }
+.climate-shell .readiness-criteria button[aria-pressed=true] { border-color: var(--ui-blue); background: var(--ui-blue-soft); box-shadow: inset 0 0 0 1px var(--ui-blue); }
+.climate-shell .criterion-icon { color: #64748b; }
+.climate-shell .readiness-criteria small { color: var(--ui-muted); }
+.climate-shell .criterion-check { border-color: #a5b3c4; }
+.climate-shell .readiness-criteria button[aria-pressed=true] .criterion-icon { color: var(--ui-blue); }
+.climate-shell .readiness-criteria button[aria-pressed=true] .criterion-check { background: var(--ui-blue); border-color: var(--ui-blue); }
+.climate-shell :is(.readiness-advanced, .readiness-results-summary>button, .inspection-back) { color: var(--ui-muted); }
+.climate-shell :is(.readiness-advanced, .readiness-results-summary>button, .inspection-back):hover { color: var(--ui-blue); }
+.climate-shell .readiness-results-summary>div { color: var(--ui-muted); }
+.climate-shell .readiness-results-summary strong { color: var(--ui-text); }
+.climate-shell .readiness-results-summary p { background: #f1f5f9; color: #475569; }
+.climate-shell .readiness-results-summary>small { color: var(--ui-muted); }
+.climate-shell .readiness-results article { border-color: var(--ui-border); }
+.climate-shell :is(.result-order, .readiness-result-title button small, .result-score small, .readiness-results li, .readiness-results li small) { color: var(--ui-muted); }
+.climate-shell .readiness-results li strong { color: var(--ui-text); }
+.climate-shell .readiness-results ul { border-color: var(--ui-border); }
+.climate-shell .readiness-result-actions button { color: var(--ui-blue-ink); }
+.climate-shell .readiness-result-actions button:last-child { background: var(--ui-blue-soft); }
+.climate-shell .readiness-result-actions button:disabled { color: var(--ui-success); background: #f0f7f3; }
+.climate-shell .readiness-more { background: #f1f5f9; color: #475569; }
+.climate-shell .readiness-more:hover { background: #e8eef6; }
+.climate-shell .readiness-no-results { color: var(--ui-muted); }
+.climate-shell .readiness-no-results button { color: var(--ui-blue-ink); border-color: var(--ui-blue-border); }
+
+/* Saved lists stay quiet; green remains meaningful for completed actions. */
+.climate-shell .inspection-savebar { border-color: var(--ui-border); background: #fff; box-shadow: 0 -4px 12px #0f172a06; }
+.climate-shell .inspection-savebar>button:first-child { background: var(--ui-blue); }
+.climate-shell .inspection-savebar>button:first-child:hover:enabled { background: var(--ui-blue-hover); }
+.climate-shell .inspection-savebar>button:first-child:disabled { background: #eef6f1; color: var(--ui-success); }
+.climate-shell .inspection-savebar>button:last-child { border-color: var(--ui-border); color: var(--ui-muted); }
+.climate-shell .inspection-intro>svg { color: var(--ui-blue); }
+.climate-shell .inspection-summary { border-color: var(--ui-border); }
+.climate-shell .inspection-summary span { color: var(--ui-muted); }
+.climate-shell .inspection-summary strong { color: var(--ui-text); }
+.climate-shell .inspection-summary span:nth-child(2) strong { color: var(--ui-success); }
+.climate-shell :is(.inspection-summary button, .inspection-card-actions button) { color: var(--ui-blue-ink); }
+.climate-shell :is(.inspection-storage, .inspection-empty, .inspection-cards article>p, .inspection-cards article>small, .inspection-cards ul, .inspection-note, .inspection-card-actions a) { color: var(--ui-muted); }
+.climate-shell .inspection-cards article { border-color: var(--ui-border); }
+.climate-shell .inspection-card-heading>span { background: #f1f5f9; color: #526174; }
+.climate-shell .inspection-card-heading>button { color: var(--ui-subtle); }
+.climate-shell .inspection-card-heading>button:hover { color: #a3543d; background: #fff4ec; }
+.climate-shell .inspection-check { border-color: var(--ui-border); }
+.climate-shell .inspection-check input { accent-color: var(--ui-success); }
+.climate-shell .inspection-note textarea { background: var(--ui-surface); border-color: #cbd5e1; color: var(--ui-text); }
+.climate-shell .inspection-note textarea::placeholder { color: var(--ui-subtle); }
+
+/* Existing analysis screens: preserve risk/observation and warning colors. */
+.climate-shell .floating-detail :is(.sidebar-title p, .section-caption, .score-card>p, .info-note p, .board-source, .board-welcome>p, .welcome-source, .welcome-source strong, .cause-text, .action-card p, .comparison-table>div, .busan-comparison>div, .score-visual>div>span, .section-title>span, .ranking-empty, .select-hint) { color: var(--ui-muted); }
+.climate-shell .floating-detail :is(.region-selectors select, .disaster-fields select, .disaster-fields input) { color: var(--ui-text); border-color: #cbd5e1; }
+.climate-shell .floating-detail :is(.sidebar-footer, .sidebar-title .eyebrow, .ranking-scope, .rank-district, .layer-options small, .disaster-note, .action-caption, .disaster-source, .record-details p, .record-details summary) { color: var(--ui-muted); }
+.climate-shell .floating-detail :is(.board-tabs, .sidebar-section) { border-color: var(--ui-border); }
+.climate-shell .board-tabs button { color: var(--ui-muted); }
+.climate-shell .board-tabs button.active { color: var(--ui-blue-ink); border-color: var(--ui-blue); }
+.climate-shell .floating-detail :is(.layer-options button.active, .ranking-list button.active) { color: var(--ui-blue-ink); background: var(--ui-blue-soft); border-color: var(--ui-blue-border); }
+.climate-shell .floating-detail .layer-options .active .radio-dot { border-color: var(--ui-blue); }
+.climate-shell .floating-detail .layer-options>button { color: var(--ui-muted); }
+.climate-shell .floating-detail .layer-options>button.active { color: var(--ui-blue-ink); }
+.climate-shell .floating-detail .ranking-list button:hover { background: var(--ui-surface); }
+.climate-shell .floating-detail .selected-region .eyebrow { color: var(--ui-subtle); }
+.climate-shell .floating-detail .selected-region>svg { color: #94a3b8; }
+.climate-shell .floating-detail .region-dot { background: #94a3b8; }
+.climate-shell .floating-detail :is(.review-rank, .report-next-step, .facility-review-return, .facility-detail) { background: var(--ui-surface); border-color: var(--ui-border); }
+.climate-shell .report-next-step { border-left-color: var(--ui-blue); }
+.climate-shell .report-next-step>span { color: var(--ui-blue-ink); }
+.climate-shell .floating-detail :is(.review-intro>p, .review-rank p, .review-evidence small, .review-panel li small, .review-notice, .report-summary p, .report-actions p, .report-checks, .report-focus>p, .report-next-step>p, .plan-body li, .report-sources>summary, .report-sources p, .report-source small) { color: var(--ui-muted); }
+.climate-shell .floating-detail :is(.plan-basis a, .report-source a) { color: var(--ui-blue-ink); }
+.climate-shell .floating-detail :is(.facility-heading>p, .facility-list-heading>span, .facility-list small, .facility-detail>p, .facility-detail dt, .facility-detail>small, .facility-footnote, .facility-more, .facility-match-count) { color: var(--ui-muted); }
+.climate-shell .floating-detail :is(.facility-search, .facility-kind button) { border-color: #d4dde7; }
+.climate-shell .facility-kind button[aria-pressed=true] { border-color: var(--ui-blue); }
+.climate-shell .facility-list>button:is(:hover, .active) { background: var(--ui-blue-soft); }
+.climate-shell .region-coverage-empty { color: var(--ui-text); }
+.climate-shell .region-coverage-empty :is(p, strong) { color: var(--ui-muted); }
+.climate-shell .region-coverage-empty>svg { color: var(--ui-subtle); }
+.climate-shell .region-coverage-empty button { background: var(--ui-blue-soft); }
+.climate-shell .sources-modal p { color: var(--ui-muted); }
+.climate-shell .sources-modal :is(.formula, .source-pills span) { background: #f1f5f9; color: #475569; border-color: var(--ui-border); }
+.climate-shell .sources-modal>a { color: var(--ui-blue-ink); }
+
+/* Navy anchors the time ruler; pale blue is reserved for the active moment. */
+.climate-shell .timeline-dock { background: #182b49; border-color: #334b6b; box-shadow: 0 8px 28px #0f172a26; color: #f8fafc; }
+.climate-shell .map-timeline { --time-accent: #bfdbfe; color: #f8fafc; }
+.climate-shell .timeline-dock :is(.timeline-context, .timeline-timezone, .timeline-footer, .timeline-tick small) { color: #bfcde0; }
+.climate-shell .timeline-record-badge { color: #c6d5ea; border-color: #536b8b; }
+.climate-shell .timeline-calendar-toggle { color: #dae5f4; border-color: #506685; }
+.climate-shell .map-timeline .timeline-transport button { color: #f1f5f9; }
+.climate-shell .map-timeline .timeline-transport .timeline-play,
+.climate-shell .timeline-playhead>span { background: var(--time-accent); color: #172e50; }
+.climate-shell .map-timeline button:hover:enabled { background: #314968; }
+.climate-shell .map-timeline .timeline-play:hover:enabled { background: #dbeafe; color: #172e50; }
+.climate-shell .timeline-ruler { border-color: #56708f; }
+.climate-shell .timeline-ruler:before { background: #56708f; }
+.climate-shell .timeline-tick { color: #e8eef8; }
+.climate-shell .timeline-tick>i { background: #94aac5; }
+.climate-shell .timeline-minor-tick { background: #7890b1; }
+.climate-shell .timeline-highlight-mark { border-color: #182b49; }
+.climate-shell .timeline-hover { color: var(--ui-text); box-shadow: 0 3px 12px #0f172a26; }
+.climate-shell .timeline-speed select { background: #263f60; color: #f8fafc; border-color: #59708f; }
+.climate-shell .timeline-link { color: #dbeafe; border-color: #3c5475; }
+.climate-shell .timeline-link:hover { background: #263f60; }
+.climate-shell .timeline-calendar { color: var(--ui-text); border-color: var(--ui-border); box-shadow: 0 8px 32px #0f172a26; }
+.climate-shell .timeline-calendar :is(input, select) { background: var(--ui-surface); color: var(--ui-text); border-color: #cbd5e1; }
+.climate-shell .map-timeline .timeline-calendar p { color: var(--ui-muted); }
+.climate-shell .map-timeline .timeline-calendar button:hover:enabled { background: var(--ui-blue-soft); color: var(--ui-blue-ink); }
+.climate-shell .map-timeline .timeline-calendar .timeline-calendar-done:hover:enabled { background: var(--ui-blue-hover); color: #fff; }
+.climate-shell .timeline-unavailable { color: #bfcde0; }
+.climate-shell .map-timeline .timeline-unavailable p { color: #d5e0f0; }
+.climate-shell .timeline-scale:has(input:focus-visible),
+.climate-shell .map-timeline :is(button, select, input):focus-visible { outline-color: #bfdbfe; }
+.climate-shell .map-timeline .timeline-calendar :is(button, select, input):focus-visible { outline-color: var(--ui-blue); }

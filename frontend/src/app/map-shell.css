@@ -1,0 +1,105 @@
+/* Map shell only: v1 cards, charts, typography and color tokens remain shared. */
+.app-shell.climate-shell{--panel-width:370px;--panel-space:390px;display:block;position:relative;height:100dvh;min-height:0;overflow:hidden;background:#e8f0f0}
+.climate-shell.board-hidden{--panel-space:0px}
+.climate-shell .map-section,.climate-shell .map-stage{position:absolute;inset:0;width:100%;height:100%;display:block}
+.climate-shell .app-header{position:absolute;inset:16px 16px auto;height:60px;padding:8px 16px;gap:24px;border:1px solid var(--border);border-radius:14px;background:#fffffff5;box-shadow:0 4px 24px #253f3710;z-index:20}
+.climate-shell .brand{min-width:180px}.climate-shell .brand strong{font-size:19px}
+.climate-shell .app-header .region-search{flex:0 1 340px;background:#f3f6f2}
+.climate-shell .shell-selected-region{display:flex;align-items:center;gap:6px;font-size:12px;color:#4f675b;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.climate-shell .header-right{gap:10px}.climate-shell .icon-button{min-height:36px;min-width:36px}
+.hazard-dock{position:absolute;left:16px;top:88px;width:340px;z-index:12;display:flex;flex-direction:column;gap:8px}
+.climate-shell .disaster-switch{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;background:#fffffff5;border:1px solid var(--border);padding:5px;border-radius:12px;box-shadow:0 3px 18px #253f370c}
+.climate-shell .disaster-switch button{min-width:0;height:62px;min-height:62px;display:flex;flex-direction:column;gap:3px;padding:5px 2px;border-radius:8px;color:#52675c;font-size:12px;border:0;background:transparent}
+.climate-shell .disaster-switch button[aria-pressed=true]{color:#fff;background:var(--green);box-shadow:none}
+.climate-shell .disaster-switch button:hover:not([aria-pressed=true]){background:var(--soft)}
+.climate-shell .disaster-switch small{font-size:9px;color:inherit;opacity:.85}
+.climate-shell .tool-rail{display:flex;flex-direction:row;justify-content:flex-start;background:#fffffff0;border:1px solid var(--border);border-radius:10px;padding:3px;align-self:flex-start;max-width:100%;box-shadow:0 3px 18px #253f3708}
+.climate-shell .tool-rail button{min-height:43px;padding:6px 10px;gap:5px;flex-direction:row;font-size:10px;border:0;border-radius:7px}
+.climate-shell .tool-rail button.active{box-shadow:none;background:var(--soft);color:var(--green)}
+.climate-shell .floating-detail{position:absolute;top:88px;right:16px;bottom:38px;width:var(--panel-width);border:1px solid #dce5dd;border-radius:14px;overflow:hidden;background:#fffffff8;box-shadow:0 8px 32px #253f3718;z-index:14}
+.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 12px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;flex-shrink:0;min-height:49px}
+.panel-heading>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.climate-shell .sidebar,.climate-shell .data-board,.climate-shell .facility-panel,.climate-shell .current-weather-panel{background:transparent;border:0;min-height:0;max-width:100%}
+.climate-shell .detail-workspace{overflow:hidden;display:flex;flex-direction:column}.climate-shell .detail-workspace[hidden]{display:none}
+.climate-shell .data-board{flex:1;min-height:0;width:100%}
+.climate-shell .current-weather-panel,.climate-shell .flood-workspace{flex:1;min-height:0;overflow:auto}
+.climate-shell .flood-content{padding:18px 20px}.climate-shell .pending-detail{padding:22px;line-height:1.9}
+.pending-detail h2{font-size:17px;margin-bottom:12px}.pending-detail p{font-size:12px;margin-bottom:12px;color:#63766a}
+.climate-shell .map-topbar{position:absolute;top:219px;left:16px;padding:6px 10px;height:auto;max-width:calc(100% - var(--panel-space) - 85px);border:1px solid var(--border);border-radius:7px;gap:12px;z-index:4;background:#fffffff0}
+.climate-shell .map-topbar .map-level{display:none}.climate-shell .map-scope{gap:0}.climate-shell .breadcrumb{gap:5px}
+.climate-shell .map-title-card{top:266px;left:16px;padding:12px 15px;border-radius:10px;max-width:calc(100% - var(--panel-space) - 85px)}
+.climate-shell .map-title-card h2{font-size:17px;margin-top:6px}.climate-shell .map-title-card p{font-size:11px;line-height:1.6;color:#657967}
+.climate-shell[data-hazard=flood] .map-title-card{top:219px}.climate-shell:has(.weather-map) .map-title-card{top:219px}
+.climate-shell .map-boundary-badge{top:auto;bottom:30px;left:16px;font-size:10px;padding:5px 8px}.climate-shell .map-boundary-badge small{display:none}
+.climate-shell .basemap-toggle{position:absolute;top:auto;bottom:30px;left:auto;right:calc(var(--panel-space) + 64px);border-radius:7px;background:#fffffff0}
+.climate-shell .map-tools{top:88px;right:calc(var(--panel-space) + 16px);z-index:5;border-radius:9px}
+.climate-shell .map-tools button{width:34px;height:38px}.climate-shell .zoom-tools{right:calc(var(--panel-space) + 16px);bottom:66px;z-index:5}
+.climate-shell .zoom-tools button{width:40px;height:40px}.climate-shell .north-marker{bottom:90px;left:13px}
+.climate-shell .floating-layer-menu{right:calc(var(--panel-space) + 65px);top:129px;z-index:15}
+.climate-shell .map-legend,.climate-shell .flood-map-legend,.climate-shell .facility-map-legend,.climate-shell .weather-map-notice{left:16px;bottom:162px;right:auto;border-radius:10px;padding:12px 14px;max-width:250px;z-index:3;background:#fffffff2}
+.climate-shell .weather-color-key{display:flex;flex-wrap:wrap;gap:5px 12px}.climate-shell .weather-map-notice{font-size:10px}
+.climate-shell .map-data-notice{left:16px;right:auto;bottom:127px;max-width:calc(100% - var(--panel-space) - 86px);font-size:10px;padding:6px 9px;z-index:3}
+.climate-shell .map-statusbar{position:absolute;bottom:0;left:0;right:0;height:22px;font-size:9px;padding:0 16px;background:#fffffff0;z-index:4}
+.climate-shell .map-attribution{bottom:24px;right:16px;z-index:4}
+.climate-shell .updating-pill{top:370px;left:16px}.climate-shell .sample-map-banner{top:380px;left:16px;right:auto}
+.climate-shell .busan-shortcut{right:calc(var(--panel-space) + 72px);bottom:175px}
+.timeline-dock{position:absolute;bottom:39px;left:calc((100% - var(--panel-space))/2);transform:translateX(-50%);width:min(480px,calc(100% - var(--panel-space) - 290px));z-index:8;border:1px solid #dce5dd;border-radius:12px;background:#fffffff5;box-shadow:0 5px 24px #253f3712}
+.map-timeline{padding:11px 15px}.timeline-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px}.timeline-heading time{font-size:10px;font-variant-numeric:tabular-nums;color:#66796b}
+.timeline-controls{display:flex;align-items:center;gap:4px;margin-top:6px}.timeline-controls button{width:30px;height:30px;flex-shrink:0;border-radius:6px}.timeline-controls button:hover:enabled{background:var(--soft)}.timeline-controls .timeline-play{background:var(--green);color:white}
+.timeline-controls input{width:100%;min-width:0;accent-color:var(--green);margin-left:9px;height:24px}.timeline-controls button:disabled{opacity:.36}.timeline-controls input:disabled{opacity:.5}
+.map-timeline p{font-size:10px;color:#68796e;line-height:1.6;margin-top:4px}.timeline-range{display:flex;justify-content:space-between;font-size:9px;color:#728477;margin-top:3px}
+.timeline-link{display:flex;width:100%;border-top:1px solid var(--border);padding:6px;font-size:10px;gap:7px;color:var(--green)}
+.climate-shell:has(.timeline-link) .map-data-notice{bottom:148px}.climate-shell:has(.timeline-link) .map-legend{bottom:184px}
+.disaster-empty{position:absolute;left:calc((100% - var(--panel-space))/2);top:44%;transform:translate(-50%,-50%);width:340px;max-width:calc(100% - 100px);padding:26px;text-align:center;border:1px solid #dce5dd;border-radius:16px;background:#fffffff5;box-shadow:0 6px 30px #253f3710;z-index:4}
+.empty-disaster-icon{width:56px;height:56px;border-radius:50%;background:var(--soft);color:#5b7968;display:grid;place-items:center;margin:0 auto 16px}.disaster-empty .eyebrow{letter-spacing:.3px;font-size:11px}.disaster-empty h1{font-size:23px;margin:9px 0}.disaster-empty p{color:#617667;font-size:12px;line-height:1.8;word-break:keep-all}.disaster-empty small{display:block;margin-top:15px;font-size:10px;line-height:1.7;color:#728377}
+.climate-shell input:focus-visible{outline:3px solid #6ca790;outline-offset:2px}
+@media(max-width:1100px){
+ .app-shell.climate-shell{--panel-width:340px;--panel-space:360px}.climate-shell.board-hidden{--panel-space:0px}
+ .hazard-dock{max-width:calc(100% - var(--panel-space) - 76px)}
+ .climate-shell .app-header{gap:15px}.climate-shell .app-header>.shell-selected-region{display:none}.climate-shell .header-right{gap:5px}
+ .climate-shell .map-topbar .map-scope{display:none}.timeline-dock{width:min(480px,calc(100% - var(--panel-space) - 120px))}
+ .climate-shell .map-data-notice{max-width:calc(100% - var(--panel-space) - 85px)}.climate-shell .map-data-notice button{display:none}
+ .climate-shell .basemap-toggle{bottom:162px}.climate-shell .map-legend{width:210px}
+}
+@media(max-width:760px){
+ .app-shell.climate-shell{--panel-space:0px}.climate-shell .app-header{inset:10px 10px auto;height:54px;padding:6px 8px;gap:8px;border-radius:10px}
+ .climate-shell .brand{min-width:34px;gap:0}.climate-shell .brand>span:last-child{display:none}.climate-shell .brand-mark{width:32px;height:36px}
+ .climate-shell .app-header .region-search{flex:1;min-width:0;min-height:38px}.climate-shell .region-search input{height:36px}.climate-shell .header-right{margin:0}.climate-shell .mode-selector{display:none}
+ .hazard-dock{top:74px;left:10px;width:calc(100% - 20px);max-width:none;gap:6px}.climate-shell .disaster-switch button{height:57px;min-height:57px;font-size:11px}.climate-shell .disaster-switch{padding:4px}
+ .climate-shell .tool-rail{align-self:stretch;justify-content:space-between}.climate-shell .tool-rail button{min-height:40px;padding:5px 8px}
+ .climate-shell .map-topbar{top:195px;left:10px;max-width:calc(100% - 70px);font-size:10px}.climate-shell .map-title-card{display:none}
+ .climate-shell .map-tools{top:195px;right:10px}.climate-shell .map-tools button{height:34px;width:32px}
+ .climate-shell .floating-detail{top:auto;bottom:150px;left:10px;right:10px;width:auto;max-height:43dvh;border-radius:14px;z-index:14}
+ .climate-shell .floating-detail .sidebar,.climate-shell .floating-detail .data-board{max-height:calc(43dvh - 49px)}
+ .climate-shell .map-legend,.climate-shell:has(.timeline-link) .map-legend,.climate-shell .flood-map-legend,.climate-shell .facility-map-legend,.climate-shell .weather-map-notice{bottom:161px;left:10px;max-width:210px;padding:10px 12px}
+ .climate-shell:not(.board-hidden) .map-legend,.climate-shell:not(.board-hidden) .flood-map-legend,.climate-shell:not(.board-hidden) .facility-map-legend,.climate-shell:not(.board-hidden) .weather-map-notice{visibility:hidden}
+ .climate-shell .map-data-notice{display:none}.climate-shell .map-boundary-badge{bottom:132px;left:10px;padding:3px 7px}
+ .climate-shell .basemap-toggle{bottom:132px;right:10px;max-width:220px}.climate-shell .basemap-toggle button{font-size:9px;padding:4px 6px}
+ .climate-shell .zoom-tools{bottom:185px;right:10px}.climate-shell .zoom-tools button{width:36px;height:36px}.climate-shell .north-marker{display:none}
+ .timeline-dock{bottom:29px;width:calc(100% - 20px);left:50%;border-radius:10px}.map-timeline{padding:8px 11px}.timeline-heading{font-size:10px}.timeline-controls{margin-top:3px}.map-timeline p{font-size:9px}.timeline-link{padding:4px}
+ .disaster-empty{top:47%;width:280px;padding:20px}.disaster-empty h1{font-size:21px}.empty-disaster-icon{width:44px;height:44px;margin-bottom:12px}.disaster-empty small{margin-top:10px}
+ .climate-shell:not(.board-hidden) .disaster-empty{display:none}.climate-shell .map-attribution{bottom:23px;font-size:7px}.climate-shell .map-statusbar{padding:0 10px;font-size:8px}.climate-shell .map-statusbar button{display:none}
+ .climate-shell .floating-layer-menu{top:237px;right:56px}.climate-shell .sample-map-banner{top:242px;left:10px;max-width:calc(100% - 75px)}
+}
+@media(prefers-reduced-motion:reduce){.climate-shell *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.climate-shell .disaster-switch{margin:0}
+.climate-shell .tool-rail button span{white-space:nowrap}
+.climate-shell .tool-rail button{padding-left:8px;padding-right:8px;flex-shrink:0}
+.climate-shell .flood-map-legend{position:absolute;display:flex;flex-direction:column;gap:6px;border:1px solid var(--border);font-size:10px}
+.flood-map-legend span{display:flex;align-items:center;gap:7px}.flood-map-legend i{width:15px;height:8px;border-radius:2px}.flood-map-legend strong{margin-bottom:3px}.flood-map-legend small{color:var(--muted)}
+
+.climate-shell .floating-detail{display:flex;flex-direction:column}.climate-shell .floating-detail[hidden]{display:none}
+.disaster-panel{padding:20px;overflow:auto;min-height:0;font-size:12px;line-height:1.7;flex:1}
+.disaster-panel h2{font-size:20px;margin:5px 0 12px}.disaster-panel h3{font-size:13px;margin:8px 0}
+.disaster-note{color:#637467;font-size:11px;line-height:1.8;margin:12px 0}.disaster-count{margin:14px 0;display:flex;justify-content:space-between}.disaster-count strong{color:var(--green)}
+.disaster-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.disaster-fields label{min-width:0;font-size:11px;color:#52645a}.disaster-fields select,.disaster-fields input{display:block;margin-top:4px;width:100%;min-width:0;height:40px;border:1px solid var(--border);border-radius:7px;padding:0 8px;background:#fff;font-size:12px}
+.disaster-actions{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.disaster-actions button,.typhoon-closest button{border:1px solid var(--border);background:var(--soft);padding:10px;border-radius:7px;font-size:11px;min-height:40px;color:var(--green)}
+.disaster-time{margin-top:20px;font-size:13px;font-weight:600}.disaster-metrics{display:grid;grid-template-columns:1fr 1fr;gap:14px 10px;margin:14px 0}.disaster-metrics dt{font-size:10px;color:#637467}.disaster-metrics dd{font-size:21px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:3px}.disaster-metrics dd small{font-size:11px;font-weight:400}
+.typhoon-closest{padding:14px;background:#f0f3f7;border-radius:10px;margin:18px 0}.typhoon-closest strong{font-size:25px;color:#4f668f}.typhoon-closest p{font-size:11px;margin:4px 0 10px}
+.landslide-list{max-height:310px;overflow:auto;margin:14px 0}.landslide-list button{width:100%;display:flex;justify-content:space-between;gap:8px;text-align:left;padding:12px 8px;border-bottom:1px solid var(--border);font-size:11px;min-height:48px}.landslide-list button[aria-pressed=true]{background:var(--soft);color:var(--green)}.landslide-list small{display:block;color:#637467;margin-top:3px}.landslide-detail{background:#f8f6f1;padding:12px;border-radius:8px;margin:12px 0}.landslide-detail p{white-space:pre-line}
+.profile-records{margin:12px 0}.profile-records>div{display:flex;justify-content:space-between;gap:12px;margin:8px 0}.profile-records dt{color:#637467}.profile-records dd{text-align:right}
+.neighborhood-profile{margin:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 0;font-size:11px;line-height:1.7}.neighborhood-profile summary{cursor:pointer;font-size:12px;color:var(--green);font-weight:600;min-height:28px}.neighborhood-profile h3{margin-top:14px}.neighborhood-profile .disaster-metrics dd{font-size:15px}.neighborhood-profile a{color:var(--green)}
+.floating-detail>.neighborhood-profile{margin:0;padding:12px 20px;overflow:auto;max-height:40%;flex-shrink:0}.disaster-source{font-size:10px;margin-top:18px;padding-top:12px;border-top:1px solid var(--border);color:#66786a;overflow-wrap:anywhere}.disaster-source a{color:var(--green)}.disaster-source p{margin-top:6px}
+.climate-shell .map-title-card.disaster-title{top:219px}.typhoon-marker{color:#455d89;background:white;border:2px solid #455d89;border-radius:50%;font-size:22px;line-height:28px;text-align:center;width:32px;height:32px;box-shadow:0 2px 8px #22334440;z-index:4}
+@media(max-width:760px){.disaster-panel{padding:14px}.disaster-panel h2{font-size:18px}.disaster-fields select,.disaster-fields input{height:44px}.disaster-actions button{min-height:44px}.disaster-metrics dd{font-size:19px}}

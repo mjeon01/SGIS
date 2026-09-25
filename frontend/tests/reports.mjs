@@ -1,8 +1,10 @@
+import {selectAnalysisTab} from './navigation.mjs';
 import {chromium,expect} from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'../..');
+fs.mkdirSync(path.join(root,'var/regression-screenshots'),{recursive:true});
 const base=process.env.APP_URL||'http://127.0.0.1:3018';
 const browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 const page=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
@@ -16,9 +18,9 @@ const select=async name=>{
 try {
   const before=await (await page.request.get(base+'/api/risk?parent_code=21&mode=sgis&level=dong')).json();
   await page.goto(base);
-  await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수');
+  await expect(page.locator('.map-statusbar')).toContainText('173개 종합점수',{timeout:30000});
   await select('부곡4동');
-  await page.getByRole('tab',{name:'대응방안',exact:true}).click();
+  await selectAnalysisTab(page,'대응방안');
   await expect(page.locator('.response-panel')).toHaveAttribute('data-prepared','prepared');
   await expect(page.locator('.response-plan')).toHaveCount(3);
   await expect(page.locator('.report-next-step')).toBeVisible();
@@ -28,14 +30,14 @@ try {
   await expect(page.locator('.review-intro')).toBeInViewport();
   await expect(page.locator('.review-panel')).not.toContainText('규칙 기반');
   await expect(page.locator('.map-canvas')).toHaveAttribute('data-ready','true');
-  await page.screenshot({path:path.join(root,'submission/screenshots/46-prepared-report.png'),fullPage:true});
+  await page.screenshot({path:path.join(root,'var/regression-screenshots/46-prepared-report.png'),fullPage:true});
   await page.locator('.response-plan').nth(1).locator('summary').click();
   await expect(page.locator('.response-plan').nth(1)).toContainText('운영시간');
   const links=await page.locator('.plan-basis a').evaluateAll(els=>els.map(el=>el.href));
   expect(links.length).toBe(3);
   expect(links.every(url=>new URL(url).hostname.endsWith('mois.go.kr'))).toBe(true);
   await page.locator('.response-plan').first().scrollIntoViewIfNeeded();
-  await page.screenshot({path:path.join(root,'submission/screenshots/47-grounded-response-plan.png'),fullPage:true});
+  await page.screenshot({path:path.join(root,'var/regression-screenshots/47-grounded-response-plan.png'),fullPage:true});
   await page.locator('.report-sources summary').click();
   await expect(page.locator('.report-sources')).toContainText('분석 통계: 2024년');
   await expect(page.locator('.report-sources')).toContainText('2026년 현재 시설');
@@ -53,13 +55,13 @@ try {
   await page.getByRole('button',{name:'선택한 동의 보고서로 돌아가기',exact:false}).click();
   await expect(page.locator('.review-panel')).toHaveAttribute('data-prepared','prepared');
   await select('선두구동');
-  await page.getByRole('tab',{name:'보고서',exact:true}).click();
+  await selectAnalysisTab(page,'보고서');
   await expect(page.locator('.review-panel')).toHaveAttribute('data-prepared','insufficient');
   await expect(page.locator('.review-rank')).toContainText('미산출');
   await expect(page.locator('.report-focus')).toHaveCount(0);
   await page.getByLabel('데이터 모드',{exact:true}).selectOption('sample');
   await page.locator('.ranking-list button').first().click();
-  await page.getByRole('tab',{name:'보고서',exact:true}).click();
+  await selectAnalysisTab(page,'보고서');
   await expect(page.locator('.review-panel')).toHaveAttribute('data-prepared','sample');
   await expect(page.locator('.report-focus')).toHaveCount(0);
   const after=await (await page.request.get(base+'/api/risk?parent_code=21&mode=sgis&level=dong')).json();

@@ -1,55 +1,31 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
-import maplibregl from 'maplibre-gl';
+import {useRef} from 'react';
 import {LineChart,Line,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,ReferenceLine} from 'recharts';
-import {ArrowLeft,ArrowRight,ChevronRight,RefreshCw,Plus,Minus} from 'lucide-react';
-import type {WeatherComparison,GeoData} from '@/types';
-import {api} from '@/services/api';
+import {ArrowLeft,ArrowRight,ChevronRight,MapPin,RefreshCw} from 'lucide-react';
 import {fmt} from './constants';
+import {thermalColor} from './map/WeatherLayer';
+import type {WeatherController} from '@/hooks/useWeather';
 
-type Job={state:string;message:string|null};
-type Props={board:boolean;context:GeoData|null;stationId:string;onStationChange:(id:string)=>void;onAnalyze:(code:string,name:string)=>void;returnRegion:{code:string;name:string}|null;onReturn:()=>void};
-const thermalColor=(value:number|null)=>value==null?'#86918b':value>=33?'#b74132':value>=30?'#c76b30':value>=27?'#ad8432':'#477f93';
-export default function CurrentWeatherScreen({board,context,stationId,onStationChange,onAnalyze,returnRegion,onReturn}:Props){
- const [data,setData]=useState<WeatherComparison|null>(null),[error,setError]=useState<string|null>(null),[retry,setRetry]=useState(0);
- const [period,setPeriod]=useState<'recent'|'summer'>('recent'),[job,setJob]=useState<Job>({state:'idle',message:null});
- const container=useRef<HTMLDivElement>(null),map=useRef<maplibregl.Map|null>(null),markers=useRef<maplibregl.Marker[]>([]);
- const [ready,setReady]=useState(false),[mapError,setMapError]=useState(false);
- const fitted=useRef(false),originResolved=useRef(false),linksRef=useRef<HTMLElement>(null);
+type Props={place:string;onFacilities:()=>void;controller:WeatherController;onStationChange:(id:string)=>void;onAnalyze:(code:string,name:string)=>void;returnRegion:{code:string;name:string}|null;onReturn:()=>void};
+export default function CurrentWeatherScreen({controller,onStationChange,onAnalyze,returnRegion,onReturn,place,onFacilities}:Props){
+ const {data,error,period,setPeriod,job,refresh,station,series,focus}=controller;
+ const linksRef=useRef<HTMLElement>(null);
  const selectStation=(id:string)=>{onStationChange(id);requestAnimationFrame(()=>linksRef.current?.scrollIntoView({block:'nearest',behavior:'smooth'}));};
- useEffect(()=>{const c=new AbortController();setError(null);api<WeatherComparison>('/current-weather/comparison',c.signal).then(setData).catch(e=>{if(e.name!=='AbortError')setError(e.message);});api<Job>('/current-weather/refresh',c.signal).then(setJob).catch(()=>{});return()=>c.abort();},[retry]);
- useEffect(()=>{if(job.state!=='running')return;const c=new AbortController();const timer=setTimeout(()=>api<Job>('/current-weather/refresh',c.signal).then(j=>{setJob(j);if(j.state==='complete')setRetry(n=>n+1);}).catch(e=>{if(e.name!=='AbortError')setJob({state:'error',message:e.message});}),3000);return()=>{clearTimeout(timer);c.abort();};},[job]);
- const refresh=async()=>{setJob({state:'running',message:'저장자료와 기상청 조회 상태를 확인합니다.'});try{const j=await api<Job>('/current-weather/refresh',undefined,{});setJob(j);if(j.state==='fresh')setRetry(n=>n+1);}catch(e){setJob({state:'error',message:(e as Error).message});}};
- useEffect(()=>{if(!data||originResolved.current)return;originResolved.current=true;const match=returnRegion&&data.stations.find(s=>s.regions.some(r=>r.region_code===returnRegion.code));if(match)onStationChange(match.station_id);},[data,returnRegion,onStationChange]);
- const station=data?.stations.find(s=>s.station_id===stationId)||data?.stations[0];const series=station?.[period];
- useEffect(()=>{
-  if(!container.current)return;let m:maplibregl.Map;
-  try{m=new maplibregl.Map({container:container.current,style:{version:8,sources:{},layers:[{id:'background',type:'background',paint:{'background-color':'#e8f0f0'}}]},center:[129.07,35.19],zoom:10.25,minZoom:8,maxZoom:17,attributionControl:false});}catch{setMapError(true);return;}
-  map.current=m;m.addControl(new maplibregl.AttributionControl({compact:true,customAttribution:'경계 © SGIS'}));
-  m.on('load',()=>{m.addSource('context',{type:'geojson',data:context||{type:'FeatureCollection',features:[]}});m.addLayer({id:'land',type:'fill',source:'context',paint:{'fill-color':'#f7f8f2'}});m.addLayer({id:'line',type:'line',source:'context',paint:{'line-color':'#bbcdbf','line-width':1}});setReady(true);});
-  const observer=new ResizeObserver(()=>m.resize());observer.observe(container.current);return()=>{observer.disconnect();markers.current.forEach(m=>m.remove());m.remove();map.current=null;};
-  // The station map has an independent camera and no vulnerability layer.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
- },[]);
- useEffect(()=>{if(!ready||!map.current)return;(map.current.getSource('context') as maplibregl.GeoJSONSource).setData(context||{type:'FeatureCollection',features:[]});},[context,ready]);
- useEffect(()=>{if(!ready||!map.current||!data||fitted.current)return;const locations=data.stations.flatMap(s=>s.location?[[s.location.longitude,s.location.latitude] as [number,number]]:[]);if(!locations.length)return;const bounds=new maplibregl.LngLatBounds();locations.forEach(p=>bounds.extend(p));map.current.fitBounds(bounds,{padding:{top:170,bottom:160,left:100,right:80},maxZoom:11,duration:0});fitted.current=true;},[ready,data]);
- useEffect(()=>{if(!ready||!map.current||!data)return;markers.current.forEach(m=>m.remove());markers.current=data.stations.filter(s=>s.location).map(s=>{const button=document.createElement('button');button.className=`weather-marker ${s.station_id===station?.station_id?'active':''}`;const name=document.createElement('span');name.textContent=s.station_name;const value=document.createElement('strong');value.textContent=s.maximum==null?'관측 없음':fmt(s.maximum)+'℃';button.append(name,value);button.style.setProperty('--weather-color',thermalColor(s.maximum));button.title=`${data.observed_on} 일 최고기온`;button.setAttribute('aria-label',`${s.station_name} 관측소 선택`);button.onclick=()=>selectStation(s.station_id);return new maplibregl.Marker({element:button}).setLngLat([s.location!.longitude,s.location!.latitude]).addTo(map.current!);});return()=>markers.current.forEach(m=>m.remove());},[data,ready,station,onStationChange]);
- const focus=()=>{if(station?.location)map.current?.flyTo({center:[station.location.longitude,station.location.latitude],zoom:12,duration:500});};
- return <div className={`current-weather-screen ${board?'':'collapsed'}`}>
-  <aside className="current-weather-panel" hidden={!board} aria-label="기상 비교">
-   <div className="facility-heading weather-heading"><span className="eyebrow">기온에서 동네 분석까지</span><h1>어느 쪽이 더웠을까요?</h1><p>같은 날의 기온을 비교하고<br/>인근 동네의 취약요인을 살펴보세요.</p></div>
+ return <aside className="current-weather-panel" aria-label="기온 기록">
+   <div className="facility-heading weather-heading"><span className="eyebrow">폭염 대비 · 기온 기록</span><h1>우리 동네 기온 비교</h1><p>{place}에서 출발해 인근 관측기온을 비교합니다.</p></div>
    <div className="weather-content">
     {returnRegion&&<button className="weather-return-analysis" onClick={onReturn}><ArrowLeft size={14}/>{returnRegion.name} 분석으로 돌아가기</button>}
     <button className="weather-refresh" disabled={job.state==='running'} onClick={refresh}><RefreshCw size={14} className={job.state==='running'?'spin':''}/>{job.state==='running'?'기상청 조회 중':'기상청 자료 갱신'}</button>
     {job.message&&<p role="status" className="temperature-note">{job.message}</p>}
-    {error&&<div role="alert" className="inline-error">{error}<button onClick={()=>setRetry(n=>n+1)}>다시 불러오기</button></div>}
+    {error&&<div role="alert" className="inline-error">{error}<button onClick={()=>controller.retry()}>다시 불러오기</button></div>}
     {!data&&!error?<p>관측자료를 불러오고 있습니다…</p>:data&&station&&<>
      <section className="weather-comparison-list" aria-label="같은 날 최고기온 비교"><div className="section-title"><h2>같은 날 최고기온</h2><time>{data.observed_on}</time></div><p>관측값이 있는 {data.observed_count}곳 · 높은 기온부터 표시</p><div>{data.stations.map(s=><button key={s.station_id} aria-pressed={station.station_id===s.station_id} onClick={()=>selectStation(s.station_id)}><i style={{background:thermalColor(s.maximum)}}/><span>{s.station_name}</span><strong>{s.maximum==null?'관측 없음':`${fmt(s.maximum)}℃`}</strong><ChevronRight size={12}/></button>)}</div></section>
-     {data.meta.outdated&&<p className="inline-error">저장된 {data.observed_on} 관측자료입니다. 최신 자료로 갱신할 수 있습니다.</p>}
+     {data.meta.outdated&&<p className="inline-error">저장된 {data.meta.requested_through}까지의 관측자료입니다. 최신 자료로 갱신할 수 있습니다.</p>}
      <label className="weather-station-select">관측소<select aria-label="기상 관측소" value={station.station_id} onChange={e=>selectStation(e.target.value)}>{data.stations.map(s=><option key={s.station_id} value={s.station_id}>{s.station_name} · {s.kind}{!s.latest?' · 최근 관측 미확인':''}</option>)}</select></label>
-     <section ref={linksRef} className="weather-linked-regions" aria-label="관측소와 연결된 동네 분석"><div className="section-title"><h2>{station.station_name} 관측소 인근 동네</h2><span>{station.regions.length}개 동</span></div><p>각 동의 대표 위치에서 가장 가까운 관측소로 연결했습니다. 동을 선택해 취약요인과 대응 방향을 확인하세요.</p><div className="weather-linked-list">{[...station.regions].sort((a,b)=>Number(b.region_code===returnRegion?.code)-Number(a.region_code===returnRegion?.code)).map(r=><button key={r.region_code} aria-current={r.region_code===returnRegion?.code?'location':undefined} onClick={()=>onAnalyze(r.region_code,r.region_name)}><span><b>{r.region_name}</b><small>{r.full_name.replace('부산광역시 ','').replace(r.region_name,'').trim()} · {fmt(r.distance_km,2)}km</small></span><span>동네 분석 <ArrowRight size={13}/></span></button>)}</div>{!station.regions.length&&<p className="weather-linked-empty">현재 연결된 부산 읍·면·동이 없습니다.</p>}<small>같은 관측값을 참고하는 동도 인구·주거 취약성은 다를 수 있습니다.</small></section>
+     <section ref={linksRef} className="weather-linked-regions" aria-label="관측소와 연결된 동네 분석"><div className="section-title"><h2>{station.station_name} 관측소 인근 동네</h2><span>{station.regions.length}개 동</span></div><p>현재 연결 기준으로 각 동의 대표 위치에서 가장 가까운 관측소입니다. 동을 선택해 취약요인과 대응 방향을 확인하세요.</p><div className="weather-linked-list">{[...station.regions].sort((a,b)=>Number(b.region_code===returnRegion?.code)-Number(a.region_code===returnRegion?.code)).map(r=><button key={r.region_code} aria-current={r.region_code===returnRegion?.code?'location':undefined} onClick={()=>onAnalyze(r.region_code,r.region_name)}><span><b>{r.region_name}</b><small>{r.full_name.replace('부산광역시 ','').replace(r.region_name,'').trim()} · {fmt(r.distance_km,2)}km</small></span><span>동네 분석 <ArrowRight size={13}/></span></button>)}</div>{!station.regions.length&&<p className="weather-linked-empty">현재 연결된 부산 읍·면·동이 없습니다.</p>}<small>같은 관측값을 참고하는 동도 인구·주거 취약성은 다를 수 있습니다.</small></section>
      <div className="weather-station-note"><strong>{station.station_name} 관측소 · {station.kind}</strong><p>{station.location?.address||'현재 관측소 위치 미확인'}</p><small>관측소 위치의 실측값입니다. 동 전체의 기온을 뜻하지 않습니다.</small>{station.location&&<button onClick={focus}>지도에서 관측소 위치 보기 ↗</button>}</div>
      <section className="weather-latest"><span>{data.observed_on} 관측값{station.maximum==null&&' · 최고기온 미확인'}</span><div><b>최고 {fmt(station.maximum)}℃</b><b>최저 {fmt(station.minimum)}℃</b></div></section>
+    <button className="heat-facility-link weather-facility-link" onClick={onFacilities}><MapPin size={19}/><span><strong>선택 동네의 쉼터·그늘막 확인</strong><small>{place} · 등록 이용대상과 운영시간</small></span><ArrowRight size={17}/></button>
      <div className="facility-kind" role="group" aria-label="기상 조회 기간"><button aria-pressed={period==='recent'} onClick={()=>setPeriod('recent')}>최근 30일</button><button aria-pressed={period==='summer'} onClick={()=>setPeriod('summer')}>여름 기록 · 6~8월</button></div>
      {series?<><p className="weather-period">{series.period.join(' ~ ')}</p><div className="temperature-extremes">{(['maximum','minimum'] as const).map(key=><div className={key} key={key}><span>기간 {key==='maximum'?'최고':'최저'}기온</span><strong>{fmt(series.summary[key].value)}<small>℃</small></strong><small>{series.summary[key].complete?series.summary[key].dates.join(', '):'결측으로 기간값 미산출'}<br/>{series.summary[key].valid_days}/{series.summary.expected_days}일 확보</small></div>)}</div>
       <div className="current-weather-chart" role="img" aria-label="2026년 일별 최고·최저기온 그래프"><ResponsiveContainer width="100%" height={195}><LineChart data={series.daily} margin={{top:15,left:-25,right:6,bottom:0}}><CartesianGrid strokeDasharray="3 3" stroke="#e3e9e2"/><XAxis dataKey="date" tickFormatter={d=>d.slice(5)} tick={{fontSize:9}} minTickGap={35}/><YAxis unit="℃" tick={{fontSize:9}} domain={['auto','auto']}/><Tooltip labelFormatter={d=>String(d)} formatter={(v,n)=>[`${v}℃`,n]}/><ReferenceLine y={33} stroke="#d58b45" strokeDasharray="4 3"/><Line name="최고기온" dataKey="maximum" stroke="#c95f45" dot={false} strokeWidth={2} isAnimationActive={false} connectNulls={false}/><Line name="최저기온" dataKey="minimum" stroke="#3f819f" dot={false} strokeWidth={2} isAnimationActive={false} connectNulls={false}/></LineChart></ResponsiveContainer></div>
@@ -59,7 +35,5 @@ export default function CurrentWeatherScreen({board,context,stationId,onStationC
      <p className="temperature-note">완료된 하루의 관측값으로, 실시간 기온은 아닙니다. 기온 비교는 동별 취약도 점수와 별도로 제공합니다.</p><details className="weather-data-details"><summary>조회한 자료 확인</summary><p className="weather-freshness">조회 범위: {data.meta.requested_through}까지<br/>저장: {new Date(data.meta.collected_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'})} KST</p></details><a className="weather-source" href={station.source_url} target="_blank" rel="noreferrer">기상청 기상자료개방포털 ↗</a>
     </>}
    </div>
-  </aside>
-  <section className="weather-map-section" aria-label="기상 관측소 지도"><div ref={container} className="weather-map" data-ready={ready}/>{mapError&&<p className="map-error">지도를 표시할 수 없습니다. 왼쪽 관측소 목록에서 기록을 확인하세요.</p>}<div className="map-title-card"><span className="eyebrow">같은 날의 일 최고기온</span><h2>부산 기온 비교</h2><p>{data?.observed_on||'관측일 확인 중'} · 관측소를 누르면 연결된 동네를 확인할 수 있습니다.</p></div><div className="zoom-tools"><button aria-label="관측소 지도 확대" onClick={()=>map.current?.zoomIn()}><Plus size={18}/></button><button aria-label="관측소 지도 축소" onClick={()=>map.current?.zoomOut()}><Minus size={18}/></button></div><div className="weather-map-notice"><div className="weather-color-key" aria-label="관측 기온 색상 범례">{[['#477f93','27℃ 미만'],['#ad8432','27~30℃ 미만'],['#c76b30','30~33℃ 미만'],['#b74132','33℃ 이상'],['#86918b','관측 없음']].map(([color,label])=><span key={label}><i style={{background:color}}/>{label}</span>)}</div>관측소 위치의 기온입니다. 동 전체의 기온이나 취약도 등급을 뜻하지 않습니다.</div></section>
- </div>;
+  </aside>;
 }

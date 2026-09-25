@@ -1,0 +1,89 @@
+/* A time ruler over the map. Actual timestamps determine horizontal positions. */
+.climate-shell .timeline-dock{left:calc(var(--panel-space) + 18px);right:76px;bottom:42px;width:auto;transform:none;border:1px solid #36564e;border-radius:14px;background:#193b33;box-shadow:0 8px 28px #0f2b342b;color:#f4faf7}
+.climate-shell .map-timeline{--time-accent:#b9ebd0;position:relative;padding:12px 20px 8px;color:#f4faf7}
+.climate-shell .timeline-heading{min-height:28px;gap:18px;font-size:12px}
+.timeline-title,.timeline-date-control{display:flex;align-items:center;gap:9px;min-width:0}
+.timeline-title strong{font-weight:600;white-space:nowrap}.timeline-context{color:#b7cec3;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.timeline-status-dot{width:6px;height:6px;border-radius:50%;background:var(--time-accent);flex-shrink:0}
+.climate-shell .timeline-heading time{font-size:12px;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}
+.timeline-record-badge{font-size:9px;letter-spacing:.3px;white-space:nowrap;color:#c4d8ce;border:1px solid #567368;border-radius:4px;padding:2px 5px}
+.timeline-timezone{color:#b7cec3;font-size:10px}
+.map-timeline .timeline-calendar-toggle{height:30px;width:32px;color:#d7e8df;border:1px solid #48695e;border-radius:7px;flex-shrink:0}
+.timeline-main{display:flex;gap:24px;align-items:center;padding:12px 0 0}
+.timeline-transport{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.map-timeline .timeline-transport button{width:34px;height:44px;color:#e7f2eb;border-radius:8px}
+.map-timeline .timeline-transport .timeline-play{width:94px;gap:7px;background:var(--time-accent);color:#153c2e;font-size:12px;font-weight:650}
+.map-timeline button:hover:enabled{background:#345b4e}.map-timeline .timeline-play:hover:enabled{background:#d4f4e3;color:#153c2e}
+.map-timeline button:disabled{opacity:.3;cursor:default}
+.timeline-scale{position:relative;flex:1;min-width:0;height:79px;margin:0 4px}
+.timeline-ruler{position:absolute;inset:0;pointer-events:none;border-bottom:1px solid #56796a}
+.timeline-ruler:before{content:"";position:absolute;left:0;right:0;top:29px;height:2px;background:#547568}
+.timeline-elapsed{position:absolute;left:0;top:29px;width:var(--progress);height:2px;background:var(--time-accent)}
+.timeline-tick,.timeline-minor-tick{position:absolute;top:29px;transform:translateX(-50%)}
+.timeline-tick{display:flex;align-items:center;flex-direction:column;white-space:nowrap;line-height:1.4;font-variant-numeric:tabular-nums;font-size:11px;color:#e9f2ed}
+.timeline-tick>i{height:9px;width:1px;background:#8baa9c;margin-bottom:5px}.timeline-tick small{font-size:9px;color:#b6cfc1}
+.timeline-tick.is-first{transform:none;align-items:flex-start}.timeline-tick.is-last{transform:translateX(-100%);align-items:flex-end}
+.timeline-minor-tick{height:5px;width:1px;background:#729385}
+.timeline-playhead{position:absolute;top:0;bottom:0;z-index:2}.timeline-playhead>span{display:block;background:var(--time-accent);color:#163d2e;font-size:11px;font-weight:700;padding:4px 8px;border-radius:5px;white-space:nowrap;line-height:1.4;font-variant-numeric:tabular-nums;box-shadow:0 2px 6px #102b2933}
+.timeline-playhead>i{position:absolute;top:24px;bottom:0;left:0;width:2px;background:var(--time-accent)}
+.timeline-playhead>i:before{content:"";position:absolute;top:0;left:-3px;width:8px;height:8px;background:var(--time-accent);transform:rotate(45deg);border-radius:1px}
+.timeline-highlight-mark{position:absolute;top:25px;width:9px;height:9px;background:#efc888;border:2px solid #193b33;transform:translateX(-50%) rotate(45deg);z-index:1}
+.timeline-hover{position:absolute;top:-29px;background:#fff;color:#2c493c;border-radius:5px;padding:5px 8px;font-size:11px;white-space:nowrap;z-index:3;box-shadow:0 3px 12px #163b3233}
+.timeline-scale input[type=range]{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;touch-action:pan-y}
+.timeline-scale:has(input:focus-visible){outline:2px solid #d0eedf;outline-offset:6px;border-radius:3px}
+.timeline-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:7px;min-height:30px;font-size:10px;color:#bdd1c7}
+.timeline-caption{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.timeline-options{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.timeline-highlight-button{gap:5px;font-size:10px;color:#f2d19d;min-height:30px;padding:0 5px;border-radius:5px}.timeline-highlight-button i{width:5px;height:5px;transform:rotate(45deg);background:#efc888}
+.timeline-speed{display:flex;align-items:center;gap:5px;white-space:nowrap}.timeline-speed select{font:inherit;font-size:11px;font-weight:600;color:#f4faf7;background:#2b5143;border:1px solid #50725f;border-radius:5px;min-height:30px;padding:0 5px;cursor:pointer}
+.climate-shell .timeline-link{color:#c5e6d5;border-color:#3c6152;padding:7px;font-size:11px}
+.timeline-calendar{position:absolute;right:12px;bottom:calc(100% + 12px);width:260px;background:#fff;border:1px solid #dce6de;border-radius:12px;padding:15px;color:#284837;box-shadow:0 8px 32px #17342930;z-index:20}
+.timeline-calendar>div{display:flex;align-items:center;justify-content:space-between;font-size:13px}.timeline-calendar>div button{width:32px;height:32px;border-radius:6px}
+.timeline-calendar label{display:block;font-size:11px;margin-top:8px}.timeline-calendar input,.timeline-calendar select{display:block;box-sizing:border-box;width:100%;height:42px;border:1px solid #cbdacf;border-radius:6px;background:#f6f9f6;color:#254b38;padding:8px;font:inherit;font-size:13px;margin-top:5px;color-scheme:light}
+.map-timeline .timeline-calendar p{color:#607768;font-size:11px;margin:12px 0}
+.map-timeline .timeline-calendar-done{width:100%;height:40px;color:#fff;background:var(--green);border-radius:7px;font-size:12px}
+.timeline-unavailable{display:flex;align-items:center;gap:10px;padding:9px 0 4px;color:#bfd2c7}.map-timeline .timeline-unavailable p{font-size:12px;line-height:1.6;color:#d4e2d9;margin:0}.timeline-unavailable input{display:none}
+.climate-shell .map-timeline.is-disabled{padding:11px 16px}.is-disabled .timeline-record-badge,.is-disabled .timeline-heading time{display:none}
+.map-timeline :is(button,select,input):focus-visible{outline:2px solid #b9ebd0;outline-offset:3px}
+/* Keep other map controls above the expanded ruler. */
+.climate-shell:has(.map-timeline:not(.is-disabled)) :is(.map-legend,.flood-map-legend,.facility-map-legend,.weather-map-notice){bottom:282px}
+.climate-shell:has(.map-timeline:not(.is-disabled)) .basemap-toggle{bottom:218px}
+.climate-shell:has(.map-timeline:not(.is-disabled)) .map-boundary-badge{bottom:218px}
+.climate-shell:has(.map-timeline:not(.is-disabled)) .zoom-tools{bottom:74px}
+@media(min-width:761px){
+ .climate-shell:has(.map-timeline.is-disabled) .basemap-toggle,.climate-shell:has(.map-timeline.is-disabled) .map-boundary-badge{bottom:170px}
+ .climate-shell:has(.map-timeline.is-disabled) :is(.map-legend,.flood-map-legend,.facility-map-legend){bottom:230px}
+}
+@media(max-width:1100px){
+ .timeline-context{display:none}.timeline-record-badge{display:none}.timeline-main{gap:13px}.climate-shell .map-timeline{padding:11px 14px 7px}.timeline-transport{gap:3px}.map-timeline .timeline-transport .timeline-play{width:80px}.map-timeline .timeline-transport button{width:28px}.timeline-record-count{display:none}
+}
+@media(min-width:761px) and (max-width:1000px){
+ .climate-shell .timeline-dock{left:16px;right:76px}
+ .climate-shell:has(.map-timeline:not(.is-disabled)) .floating-detail{bottom:240px}
+}
+@media(max-width:760px){
+ .climate-shell .timeline-dock{left:10px;right:10px;bottom:28px;width:auto;border-radius:12px}
+ .climate-shell .map-timeline{padding:9px 12px 6px}.climate-shell .timeline-heading{gap:7px;min-height:26px}.timeline-title{gap:5px}.timeline-title strong{font-size:10px}.climate-shell .timeline-heading time{font-size:10px}.timeline-date-control{gap:5px}.timeline-timezone{display:none}.map-timeline .timeline-calendar-toggle{height:28px;width:28px}
+ .timeline-main{gap:13px;padding-top:8px}.timeline-transport{gap:0;flex-wrap:wrap;width:44px;justify-content:center}.map-timeline .timeline-transport .timeline-play{width:44px;height:44px;order:-1;border-radius:50%}.timeline-play span{display:none}.map-timeline .timeline-transport button{height:28px;width:22px}.timeline-transport>button:not(.timeline-play){min-width:22px}
+ .timeline-scale{height:72px;margin:0 2px}.timeline-tick{font-size:10px}.timeline-tick small{font-size:9px}.timeline-playhead>span{font-size:10px;padding:4px 6px}.timeline-hover{display:none}
+ .timeline-footer{font-size:9px;gap:5px;margin-top:5px}.timeline-options{gap:5px}.timeline-highlight-button{font-size:9px;padding:0 4px}.timeline-speed>span{display:none}.timeline-speed select{font-size:10px;min-height:30px}.timeline-caption{max-width:47%}
+ .timeline-calendar{right:0;bottom:calc(100% + 8px);width:250px}.map-timeline .timeline-unavailable p{font-size:11px}
+ .climate-shell:has(.map-timeline:not(.is-disabled)) .floating-detail{bottom:220px;max-height:min(43dvh,calc(100dvh - 428px))}
+ .climate-shell:has(.map-timeline:not(.is-disabled)) :is(.map-legend,.flood-map-legend,.weather-map-notice){bottom:252px}
+ .climate-shell:has(.map-timeline:not(.is-disabled)) .basemap-toggle,.climate-shell:has(.map-timeline:not(.is-disabled)) .map-boundary-badge{bottom:206px}
+ .climate-shell:has(.map-timeline:not(.is-disabled)) .zoom-tools{bottom:242px}
+}
+@media(max-height:650px) and (min-width:761px){.climate-shell .map-timeline{padding-top:6px;padding-bottom:4px}.timeline-scale{height:66px}.timeline-main{padding-top:6px}.timeline-tick small{display:none}.timeline-footer{margin-top:3px}.climate-shell .timeline-dock{bottom:30px}}
+@media(max-height:550px) and (min-width:761px){
+ .climate-shell .app-header{inset:8px 12px auto;height:46px;padding-top:3px;padding-bottom:3px}
+ .climate-shell .hazard-dock{top:62px;width:330px;left:12px}.climate-shell .disaster-switch button{height:46px;min-height:46px;font-size:10px;flex-direction:row;gap:5px}
+ .climate-shell.board-hidden .tool-rail{display:none}.climate-shell .floating-detail{top:169px;bottom:32px!important}
+ .climate-shell .map-story-card,.climate-shell .disaster-legend{display:none}.climate-shell .map-tools{top:62px;right:12px}
+ .climate-shell .timeline-dock{left:12px;right:68px;bottom:26px}.climate-shell .timeline-heading{min-height:24px}.climate-shell .timeline-context,.climate-shell .timeline-record-badge{display:none}
+ .timeline-main{padding-top:1px;gap:15px}.timeline-scale{height:55px}.timeline-tick>i{height:5px;margin-bottom:2px}.timeline-tick small{display:none}.timeline-transport button{height:40px!important}.timeline-footer{min-height:23px;margin-top:1px}.timeline-speed select{min-height:24px}.timeline-highlight-button{min-height:24px}
+ .map-timeline[data-resolution=hourly] .timeline-tick>span{display:none}.map-timeline[data-resolution=hourly] .timeline-tick small{display:block;font-size:10px;color:#d7e8dd}
+ .climate-shell:has(.map-timeline:not(.is-disabled)) .basemap-toggle{bottom:166px;right:68px}.climate-shell:has(.map-timeline:not(.is-disabled)) .map-boundary-badge{bottom:166px;left:12px}.climate-shell .zoom-tools{bottom:45px!important;right:12px}
+ .climate-shell:not(.board-hidden) .timeline-dock{left:calc(var(--panel-space) + 12px)}
+ .climate-shell:not(.board-hidden) .timeline-title{display:none}.climate-shell:not(.board-hidden) .timeline-date-control{margin-left:auto}.climate-shell:not(.board-hidden) .timeline-transport .timeline-play{width:42px}.climate-shell:not(.board-hidden) .timeline-play span{display:none}.climate-shell:not(.board-hidden) .timeline-caption{display:none}
+}
+@media(prefers-reduced-motion:no-preference){.map-timeline button{transition:background .15s ease}.is-playing .timeline-playhead{transition:left .18s ease}.is-playing .timeline-elapsed{transition:width .18s ease}}
