@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "frontend": {
+      "root": "frontend",
+      "framework": "nextjs"
+    },
+    "backend": {
+      "root": ".",
+      "framework": "fastapi",
+      "entrypoint": "backend.app.main:app",
+      "functions": {
+        "backend/app/main.py": {
+          "excludeFiles": "{frontend/**,backend/tests/**,data/**,docs/**,submission/**,scripts/**,.venv/**,.git/**,.env,.env.*}",
+          "includeFiles": "{config/risk_weights.yaml,deployment/snapshot.zip}",
+          "maxDuration": 60
+        }
+      }
+    }
+  },
+  "rewrites": [
+    {"source": "/api(/.*)?", "destination": {"type": "service", "service": "backend"}},
+    {"source": "/(.*)", "destination": {"type": "service", "service": "frontend"}}
+  ]
+}

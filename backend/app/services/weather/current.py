@@ -8,7 +8,7 @@ import re
 import threading
 
 import httpx
-from ...core.settings import DATA_ROOT
+from ...core.settings import DATA_ROOT, IS_VERCEL
 from ..public_http import public_client
 from ..sgis.cache import atomic_json
 from .extremes import summarize_daily
@@ -30,7 +30,14 @@ def period_summary(rows, start, end):
 
 
 def current_snapshot_path():
-    return DATA_ROOT / 'processed' / f'current_weather_{observation_cutoff().year}.json'
+    path = DATA_ROOT / 'processed' / f'current_weather_{observation_cutoff().year}.json'
+    if IS_VERCEL and not path.exists():
+        # Keep a deployed snapshot readable after New Year; the API still marks
+        # its actual requested_through date as outdated.
+        saved = sorted((DATA_ROOT / 'processed').glob('current_weather_[0-9][0-9][0-9][0-9].json'))
+        if saved:
+            return saved[-1]
+    return path
 
 
 def collect_current(as_of=None, progress=None):
@@ -98,10 +105,14 @@ def collect_current(as_of=None, progress=None):
 
 
 def refresh_status():
+    if IS_VERCEL:
+        return {'state': 'disabled', 'message': '저장된 관측자료를 제공하는 버전입니다. 자료 갱신은 다음 업데이트에 반영됩니다.'}
     with _guard:return dict(_job)
 
 
 def start_refresh():
+    if IS_VERCEL:
+        return refresh_status()
     with _guard:
         if _job['state']=='running':return dict(_job)
         path=current_snapshot_path()
